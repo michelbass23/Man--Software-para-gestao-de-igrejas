@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useActionState } from "react";
-import { Church, Eye, EyeOff, ArrowRight, UserPlus } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, UserPlus } from "lucide-react";
 import { signIn, signUp } from "./actions";
 import Image from "next/image";
 import logoImg from "@/logo.png";
@@ -31,17 +31,14 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,168,67,0.15),transparent_70%)]" />
 
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          <div className="flex items-center gap-3">
+          <div>
             <Image
               src={logoImg}
-              alt="PrestaContas"
-              width={40}
-              height={40}
-              className="rounded-xl"
+              alt="Logo"
+              width={240}
+              height={240}
+              className="rounded-2xl"
             />
-            <span className="text-xl font-semibold text-zinc-100">
-              PrestaContas
-            </span>
           </div>
 
           <div>
@@ -59,26 +56,23 @@ export default function LoginPage() {
           </div>
 
           <p className="text-zinc-600 text-sm">
-            &copy; 2026 PrestaContas. Todos os direitos reservados.
+            &copy; 2026 Todos os direitos reservados.
           </p>
         </div>
       </div>
 
       {/* Right side - Login form */}
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-8">
+          <div className="lg:hidden flex justify-center mb-8">
             <Image
               src={logoImg}
-              alt="PrestaContas"
-              width={40}
-              height={40}
-              className="rounded-xl"
+              alt="Logo"
+              width={140}
+              height={140}
+              className="rounded-2xl"
             />
-            <span className="text-xl font-semibold text-zinc-100">
-              PrestaContas
-            </span>
           </div>
 
           <div className="mb-8">
@@ -87,7 +81,7 @@ export default function LoginPage() {
             </h2>
             <p className="text-zinc-500 text-sm">
               {isSignUp
-                ? "Cadastre sua igreja no PrestaContas"
+                ? "Cadastre sua igreja"
                 : "Acesse o painel da sua igreja"}
             </p>
           </div>
