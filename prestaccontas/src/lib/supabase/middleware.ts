@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Rotas públicas (não precisam de autenticação)
-  const publicPaths = ["/login", "/api/auth"];
+  const publicPaths = ["/login", "/api/auth", "/checkin"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   // Se não autenticado e não é rota pública, redirecionar para login

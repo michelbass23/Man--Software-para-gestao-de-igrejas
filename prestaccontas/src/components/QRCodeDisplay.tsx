@@ -1,12 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, Clock, Users, Loader2 } from "lucide-react";
+import { RefreshCw, Clock, Users, Loader2, ChevronDown, ChevronUp, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   generateAttendanceToken,
   getAttendanceStats,
+  getEventAttendance,
 } from "@/app/dashboard/events/attendance-actions";
+
+interface AttendanceRecord {
+  id: string;
+  name: string;
+  status: "membro" | "visitante";
+  checked_in_at: string;
+}
 
 interface QRCodeDisplayProps {
   eventId: string;
@@ -25,6 +33,8 @@ export default function QRCodeDisplay({
   const [isGenerating, setIsGenerating] = useState(false);
   const [stats, setStats] = useState({ total: 0, members: 0, visitors: 0 });
   const [checkinUrl, setCheckinUrl] = useState("");
+  const [attendees, setAttendees] = useState<AttendanceRecord[]>([]);
+  const [showAttendees, setShowAttendees] = useState(false);
 
   // Gerar novo token
   const generateToken = useCallback(async () => {
@@ -77,11 +87,15 @@ export default function QRCodeDisplay({
     return () => clearInterval(interval);
   }, [timeLeft]);
 
-  // Atualizar estatísticas a cada 5 segundos
+  // Atualizar estatísticas e lista a cada 5 segundos
   useEffect(() => {
     const fetchStats = async () => {
-      const result = await getAttendanceStats(eventId);
-      setStats(result);
+      const [statsResult, attendanceResult] = await Promise.all([
+        getAttendanceStats(eventId),
+        getEventAttendance(eventId),
+      ]);
+      setStats(statsResult);
+      setAttendees(attendanceResult);
     };
 
     fetchStats();
@@ -225,6 +239,51 @@ export default function QRCodeDisplay({
                 <p className="text-[10px] text-zinc-500">Visitantes</p>
               </div>
             </div>
+
+            {/* Lista de presentes */}
+            {attendees.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-border">
+                <button
+                  onClick={() => setShowAttendees(!showAttendees)}
+                  className="w-full flex items-center justify-between text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5" />
+                    Ver lista de presentes
+                  </span>
+                  {showAttendees ? (
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  )}
+                </button>
+
+                {showAttendees && (
+                  <div className="mt-2 max-h-48 overflow-y-auto space-y-1 scrollbar-thin">
+                    {attendees.map((a) => (
+                      <div
+                        key={a.id}
+                        className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-zinc-900/50"
+                      >
+                        <span className="text-xs text-zinc-200 truncate">
+                          {a.name}
+                        </span>
+                        <span
+                          className={cn(
+                            "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
+                            a.status === "membro"
+                              ? "bg-emerald-500/10 text-emerald-400"
+                              : "bg-blue-500/10 text-blue-400"
+                          )}
+                        >
+                          {a.status === "membro" ? "Membro" : "Visitante"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Instruções */}
