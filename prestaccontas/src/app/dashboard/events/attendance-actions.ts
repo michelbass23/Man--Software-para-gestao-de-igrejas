@@ -130,21 +130,7 @@ export async function registerAttendance(data: {
     return { error: tokenVerification.error };
   }
 
-  // Verificar se dispositivo já registrou neste evento
-  if (data.deviceFingerprint) {
-    const { data: existing } = await admin
-      .from("attendance")
-      .select("id")
-      .eq("event_id", tokenVerification.eventId)
-      .eq("device_fingerprint", data.deviceFingerprint)
-      .single();
-
-    if (existing) {
-      return { error: "Você já registrou presença neste evento" };
-    }
-  }
-
-  // Registrar presença
+  // Registrar presença (sem verificar fingerprint - permite uso de tablet compartilhado)
   const { error } = await admin.from("attendance").insert({
     event_id: tokenVerification.eventId,
     tenant_id: tokenVerification.tenantId,
@@ -153,7 +139,7 @@ export async function registerAttendance(data: {
     age: data.age || null,
     phone: data.phone?.trim() || null,
     status: data.status,
-    device_fingerprint: data.deviceFingerprint || null,
+    device_fingerprint: null,
   });
 
   if (error) {
@@ -162,6 +148,81 @@ export async function registerAttendance(data: {
   }
 
   return { error: null, success: true };
+}
+
+// Registrar presença via link fixo (público - sem auth, sem token)
+export async function registerAttendanceFixed(data: {
+  eventId: string;
+  name: string;
+  age?: number;
+  phone?: string;
+  status: "membro" | "visitante";
+}) {
+  const admin = createAdminClient();
+
+  // Verificar se o evento existe
+  const { data: event, error: eventError } = await admin
+    .from("events")
+    .select("id, tenant_id, status")
+    .eq("id", data.eventId)
+    .single();
+
+  if (eventError || !event) {
+    return { error: "Evento não encontrado" };
+  }
+
+  if (event.status === "cancelado") {
+    return { error: "Este evento foi cancelado" };
+  }
+
+  // Registrar presença
+  const { error } = await admin.from("attendance").insert({
+    event_id: event.id,
+    tenant_id: event.tenant_id,
+    name: data.name.trim(),
+    age: data.age || null,
+    phone: data.phone?.trim() || null,
+    status: data.status,
+    device_fingerprint: null,
+  });
+
+  if (error) {
+    console.error("Erro ao registrar presença:", error);
+    return { error: "Erro ao registrar presença" };
+  }
+
+  return { error: null, success: true };
+}
+
+// Buscar informações do evento para link fixo (público - sem auth)
+export async function getEventInfoForCheckIn(eventId: string) {
+  const admin = createAdminClient();
+
+  const { data: event, error } = await admin
+    .from("events")
+    .select("id, title, event_date, event_time, location, status, tenant_id, tenants(name)")
+    .eq("id", eventId)
+    .single();
+
+  if (error || !event) {
+    return { valid: false, error: "Evento não encontrado" };
+  }
+
+  if (event.status === "cancelado") {
+    return { valid: false, error: "Este evento foi cancelado" };
+  }
+
+  const tenant = event.tenants as any;
+
+  return {
+    valid: true,
+    eventId: event.id,
+    eventName: event.title,
+    eventDate: event.event_date,
+    eventTime: event.event_time,
+    eventLocation: event.location,
+    churchName: tenant?.name || "Igreja",
+  };
 }
 
 // Buscar presenças de um evento
@@ -220,4 +281,51 @@ export async function cleanupExpiredTokens() {
   if (error) {
     console.error("Erro ao limpar tokens:", error);
   }
+}
+
+// Relatorio completo de um evento (presenca + faltosos)
+export async function getEventReport(eventId: string) {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  // Buscar evento
+  const { data: event } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", eventId)
+    .eq("tenant_id", tenantId)
+    .single();
+
+  if (!event) return { event: null, attendance: [], absentMembers: [] };
+
+  // Buscar presencas
+  const { data: attendance } = await supabase
+    .from("attendance")
+    .select("*")
+    .eq("event_id", eventId)
+    .order("checked_in_at", { ascending: true });
+
+  // Buscar membros ativos para comparar com presenca
+  const { data: members } = await supabase
+    .from("members")
+    .select("id, name, phone")
+    .eq("tenant_id", tenantId)
+    .eq("status", "ativo");
+
+  // Membros que faltaram (nao fizeram check-in)
+  const attendedNames = new Set(
+    (attendance || [])
+      .filter((a) => a.status === "membro")
+      .map((a) => a.name.trim().toLowerCase())
+  );
+
+  const absentMembers = (members || [])
+    .filter((m) => !attendedNames.has(m.name.trim().toLowerCase()))
+    .map((m) => ({ id: m.id, name: m.name, phone: m.phone }));
+
+  return {
+    event,
+    attendance: attendance || [],
+    absentMembers,
+  };
 }

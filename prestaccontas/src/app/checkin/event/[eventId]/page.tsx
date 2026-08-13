@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { use } from "react";
+import { useState, useEffect, use } from "react";
 import {
   Church,
   User,
@@ -13,36 +12,32 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  verifyAttendanceToken,
-  registerAttendance,
+  getEventInfoForCheckIn,
+  registerAttendanceFixed,
 } from "@/app/dashboard/events/attendance-actions";
 
-interface TokenData {
+interface EventData {
   valid: boolean;
   eventId?: string;
-  tokenId?: string;
-  tenantId?: string;
   eventName?: string;
   eventDate?: string;
   eventTime?: string;
   eventLocation?: string;
   churchName?: string;
-  expiresAt?: string;
   error?: string;
 }
 
-export default function CheckInPage({
+export default function FixedCheckInPage({
   params,
 }: {
-  params: Promise<{ token: string }>;
+  params: Promise<{ eventId: string }>;
 }) {
-  const { token } = use(params);
-  const [tokenData, setTokenData] = useState<TokenData | null>(null);
+  const { eventId } = use(params);
+  const [eventData, setEventData] = useState<EventData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   // Form state
   const [name, setName] = useState("");
@@ -50,51 +45,16 @@ export default function CheckInPage({
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"membro" | "visitante">("visitante");
 
-  // Verificar token ao carregar
+  // Buscar dados do evento ao carregar
   useEffect(() => {
-    const verifyToken = async () => {
+    const fetchEvent = async () => {
       setIsLoading(true);
-      const result = await verifyAttendanceToken(token);
-      setTokenData(result);
-
-      if (result.valid && result.expiresAt) {
-        const expires = new Date(result.expiresAt).getTime();
-        const now = Date.now();
-        const remaining = Math.max(0, Math.floor((expires - now) / 1000));
-        setTimeLeft(remaining);
-      }
-
+      const result = await getEventInfoForCheckIn(eventId);
+      setEventData(result);
       setIsLoading(false);
     };
-
-    verifyToken();
-  }, [token]);
-
-  // Timer countdown
-  useEffect(() => {
-    if (timeLeft <= 0 || isSuccess) return;
-
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setTokenData((prev) =>
-            prev ? { ...prev, valid: false, error: "Tempo esgotado" } : null
-          );
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timeLeft, isSuccess]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+    fetchEvent();
+  }, [eventId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,8 +67,8 @@ export default function CheckInPage({
       return;
     }
 
-    const result = await registerAttendance({
-      token,
+    const result = await registerAttendanceFixed({
+      eventId,
       name: name.trim(),
       age: age ? parseInt(age) : undefined,
       phone: phone.trim() || undefined,
@@ -131,14 +91,14 @@ export default function CheckInPage({
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-gold animate-spin mx-auto mb-4" />
-          <p className="text-zinc-400">Verificando...</p>
+          <p className="text-zinc-400">Carregando...</p>
         </div>
       </div>
     );
   }
 
-  // Token inválido ou expirado
-  if (!tokenData?.valid) {
+  // Evento inválido
+  if (!eventData?.valid) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-sm text-center">
@@ -146,13 +106,10 @@ export default function CheckInPage({
             <AlertCircle className="w-8 h-8 text-ruby" />
           </div>
           <h1 className="text-xl font-semibold text-zinc-100 mb-2">
-            Link Inválido
+            Evento Indisponível
           </h1>
           <p className="text-zinc-400 text-sm mb-4">
-            {tokenData?.error || "Este link não é válido ou expirou."}
-          </p>
-          <p className="text-zinc-500 text-xs">
-            Peça um novo QR Code na igreja.
+            {eventData?.error || "Este evento não está disponível no momento."}
           </p>
         </div>
       </div>
@@ -171,11 +128,23 @@ export default function CheckInPage({
             Presença Confirmada!
           </h1>
           <p className="text-zinc-400 text-sm mb-2">
-            {tokenData.eventName}
+            {eventData.eventName}
           </p>
           <p className="text-zinc-500 text-xs">
             Obrigado por estar conosco! Deus abençoe!
           </p>
+          <button
+            onClick={() => {
+              setIsSuccess(false);
+              setName("");
+              setAge("");
+              setPhone("");
+              setStatus("visitante");
+            }}
+            className="mt-6 px-4 py-2 rounded-xl bg-gold text-black text-sm font-medium hover:bg-gold/90 transition-colors"
+          >
+            Registrar outra pessoa
+          </button>
         </div>
       </div>
     );
@@ -191,54 +160,32 @@ export default function CheckInPage({
             <Church className="w-6 h-6 text-gold" />
           </div>
           <h1 className="text-lg font-semibold text-zinc-100">
-            {tokenData.churchName}
+            {eventData.churchName}
           </h1>
           <p className="text-zinc-400 text-sm mt-1">
-            {tokenData.eventName}
+            {eventData.eventName}
           </p>
         </div>
 
         {/* Event Info */}
         <div className="glass-card p-3 mb-4">
           <div className="flex items-center justify-between text-xs">
-            {tokenData.eventDate && (
+            {eventData.eventDate && (
               <div className="flex items-center gap-1.5 text-zinc-400">
                 <Clock className="w-3.5 h-3.5" />
                 <span>
-                  {new Date(tokenData.eventDate + "T12:00:00").toLocaleDateString("pt-BR")}
-                  {tokenData.eventTime && ` às ${tokenData.eventTime.slice(0, 5)}`}
+                  {new Date(eventData.eventDate + "T12:00:00").toLocaleDateString("pt-BR")}
+                  {eventData.eventTime && ` às ${eventData.eventTime.slice(0, 5)}`}
                 </span>
               </div>
             )}
-            {tokenData.eventLocation && (
+            {eventData.eventLocation && (
               <div className="flex items-center gap-1.5 text-zinc-400">
                 <MapPin className="w-3.5 h-3.5" />
-                <span className="truncate">{tokenData.eventLocation}</span>
+                <span className="truncate">{eventData.eventLocation}</span>
               </div>
             )}
           </div>
-        </div>
-
-        {/* Timer */}
-        <div className={cn(
-          "text-center p-3 rounded-xl mb-4",
-          timeLeft > 60 ? "bg-emerald-dim" : "bg-amber-500/10"
-        )}>
-          <div className="flex items-center justify-center gap-2">
-            <Clock className={cn(
-              "w-4 h-4",
-              timeLeft > 60 ? "text-emerald" : "text-amber-400"
-            )} />
-            <span className={cn(
-              "font-mono text-lg font-semibold",
-              timeLeft > 60 ? "text-emerald" : "text-amber-400"
-            )}>
-              {formatTime(timeLeft)}
-            </span>
-          </div>
-          <p className="text-[10px] text-zinc-500 mt-1">
-            Tempo restante para confirmar
-          </p>
         </div>
 
         {/* Form */}

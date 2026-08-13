@@ -14,8 +14,10 @@ import {
   Calendar,
   X,
   QrCode,
+  FileText,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   EVENT_TYPE_LABELS,
   EVENT_TYPES,
@@ -434,6 +436,14 @@ export default function EventsPage() {
                           </button>
                         </>
                       )}
+                      <Link
+                        href={`/dashboard/events/${event.id}/report`}
+                        className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-amber-400 hover:bg-amber-500/10 transition-colors"
+                        title="Relatorio"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span className="text-xs">Relatorio</span>
+                      </Link>
                       <button
                         onClick={() => handleEdit(event)}
                         className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"

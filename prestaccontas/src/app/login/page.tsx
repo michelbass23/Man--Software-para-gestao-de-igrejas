@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import { useActionState } from "react";
-import { Eye, EyeOff, ArrowRight, UserPlus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, ArrowRight, UserPlus, Play, Loader2 } from "lucide-react";
 import { signIn, signUp } from "./actions";
+import { loginDemo } from "./demo-actions";
 import Image from "next/image";
 import logoImg from "@/logo.png";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const [demoError, setDemoError] = useState<string | null>(null);
 
   const [signInState, signInAction, signInPending] = useActionState(
     signIn,
@@ -22,6 +27,18 @@ export default function LoginPage() {
 
   const error = isSignUp ? signUpState : signInState;
   const isLoading = isSignUp ? signUpPending : signInPending;
+
+  const handleDemo = async () => {
+    setIsDemoLoading(true);
+    setDemoError(null);
+    const result = await loginDemo();
+    if (result && "error" in result && result.error) {
+      setDemoError(result.error);
+      setIsDemoLoading(false);
+    } else if (result && "redirectTo" in result && result.redirectTo) {
+      router.push(result.redirectTo);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -196,6 +213,41 @@ export default function LoginPage() {
               ? "Já tenho uma conta — Entrar"
               : "Criar uma nova conta"}
           </button>
+
+          {/* Demo button */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-3 bg-background text-zinc-600 text-xs">
+                ou
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleDemo}
+            disabled={isDemoLoading}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium hover:bg-emerald-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDemoLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+            {isDemoLoading ? "Preparando demonstração..." : "Acessar Demonstração"}
+          </button>
+
+          {demoError && (
+            <div className="mt-3 p-3 rounded-xl bg-ruby-dim border border-ruby/20">
+              <p className="text-ruby text-sm">{demoError}</p>
+            </div>
+          )}
+
+          <p className="text-center text-zinc-600 text-[10px] mt-3">
+            Explore todas as funcionalidades com dados fictícios
+          </p>
 
           {/* Footer links */}
           <div className="mt-8 text-center">

@@ -132,6 +132,27 @@ export async function signUp(
 
 export async function signOut() {
   const supabase = await createClient();
+  const admin = createAdminClient();
+
+  // Verificar se é usuário demo e limpar dados
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user?.email === "demo@prestaccontas.com") {
+    // Buscar tenant do demo
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("tenant_id")
+      .eq("id", user.id)
+      .single();
+
+    if (profile) {
+      // Deletar tenant (cascade deleta tudo)
+      await admin.from("tenants").delete().eq("id", profile.tenant_id);
+    }
+
+    // Deletar usuário demo
+    await admin.auth.admin.deleteUser(user.id);
+  }
+
   await supabase.auth.signOut();
   redirect("/login");
 }

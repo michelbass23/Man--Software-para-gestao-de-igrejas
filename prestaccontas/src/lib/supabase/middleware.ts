@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Rotas públicas (não precisam de autenticação)
-  const publicPaths = ["/login", "/api/auth", "/checkin"];
+  const publicPaths = ["/", "/login", "/api/auth", "/checkin"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   // Se não autenticado e não é rota pública, redirecionar para login
@@ -46,8 +46,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Se autenticado e está no login, redirecionar para dashboard
-  if (user && pathname === "/login") {
+  // Se autenticado e está no login ou landing, redirecionar para dashboard
+  if (user && (pathname === "/login" || pathname === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
