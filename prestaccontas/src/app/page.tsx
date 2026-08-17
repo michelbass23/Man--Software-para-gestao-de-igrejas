@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Church,
   QrCode,
   BarChart3,
   Users,
@@ -25,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import logoImg from "@/logo.png";
+import { SubscribeButton } from "@/components/SubscribeButton";
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -426,23 +426,7 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            {/* Social proof */}
-            <div className="mt-12 flex items-center justify-center gap-8 text-zinc-500 text-sm">
-              <div className="flex items-center gap-2">
-                <Church className="w-4 h-4" />
-                <span>+500 igrejas</span>
-              </div>
-              <div className="w-px h-4 bg-border" />
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                <span>+10.000 membros</span>
-              </div>
-              <div className="w-px h-4 bg-border" />
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-gold" />
-                <span>4.9/5 avaliação</span>
-              </div>
-            </div>
+
           </div>
 
           {/* Hero visual - Dashboard preview */}
@@ -744,13 +728,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
 
-                <Link
-                  href="/login"
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gold text-black text-base font-semibold hover:bg-gold/90 transition-colors"
-                >
-                  {plan.cta}
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
+                <SubscribeButton />
               </div>
             ))}
           </div>

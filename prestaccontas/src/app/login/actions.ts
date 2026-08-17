@@ -7,6 +7,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 export async function signIn(prevState: string | null, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const redirectTo = (formData.get("redirect") as string) || "/dashboard";
 
   if (!email || !password) {
     return "Preencha todos os campos";
@@ -37,7 +38,7 @@ export async function signIn(prevState: string | null, formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect(redirectTo);
 }
 
 export async function signUp(
@@ -47,6 +48,7 @@ export async function signUp(
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const churchName = formData.get("churchName") as string;
+  const redirectTo = (formData.get("redirect") as string) || "/dashboard";
 
   if (!email || !password || !churchName) {
     return "Preencha todos os campos";
@@ -127,7 +129,7 @@ export async function signUp(
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect(redirectTo);
 }
 
 export async function signOut() {

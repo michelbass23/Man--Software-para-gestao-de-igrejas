@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useActionState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, UserPlus, Play, Loader2 } from "lucide-react";
 import { signIn, signUp } from "./actions";
 import { loginDemo } from "./demo-actions";
@@ -10,7 +10,23 @@ import Image from "next/image";
 import logoImg from "@/logo.png";
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-gold" />
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
@@ -107,6 +123,7 @@ export default function LoginPage() {
             action={isSignUp ? signUpAction : signInAction}
             className="space-y-4"
           >
+            <input type="hidden" name="redirect" value={redirectTo} />
             {/* Nome da igreja (apenas no cadastro) */}
             {isSignUp && (
               <div>
