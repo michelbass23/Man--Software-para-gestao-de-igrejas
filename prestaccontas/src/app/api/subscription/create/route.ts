@@ -42,18 +42,30 @@ export async function POST(request: NextRequest) {
     const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
     const baseUrl = origin || (isLocalhost ? `http://${host}` : `https://${host}`);
 
+    // Datas obrigatórias para o checkout hospedado funcionar
+    const now = new Date();
+    const startDate = now.toISOString();
+    const endDate = new Date(
+      now.getFullYear() + 10,
+      now.getMonth(),
+      now.getDate()
+    ).toISOString();
+
     const body = {
-      reason: "Maná Sistemas - Plano Completo",
+      reason: "Mana Sistemas - Plano Completo",
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
         transaction_amount: 147.0,
         currency_id: "BRL",
+        start_date: startDate,
+        end_date: endDate,
       },
       back_url: `${baseUrl}/assinatura/sucesso`,
       payer_email: user.email,
       external_reference: profile.tenant_id,
       notification_url: `${baseUrl}/api/subscription/webhook`,
+      status: "pending",
     };
 
     console.log("Criando preapproval com body:", JSON.stringify(body, null, 2));
