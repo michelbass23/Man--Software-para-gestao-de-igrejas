@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
 
     const origin = request.headers.get("origin") || "";
     const host = request.headers.get("host") || "localhost:3000";
-    const baseUrl = origin || `http://${host}`;
+    const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
+    const baseUrl = origin || (isLocalhost ? `http://${host}` : `https://${host}`);
 
     const { plan } = await request.json();
 

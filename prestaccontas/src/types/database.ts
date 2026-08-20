@@ -26,10 +26,11 @@ export interface Tenant {
   name: string;
   slug: string;
   status: "active" | "inactive" | "trialing";
-  stripe_subscription_id?: string;
-  stripe_customer_id?: string;
   plan: "free" | "pro" | "enterprise";
   logo_url?: string;
+  mercado_pago_preapproval_id?: string;
+  subscription_started_at?: string;
+  subscription_next_payment?: string;
   created_at: string;
   updated_at: string;
 }

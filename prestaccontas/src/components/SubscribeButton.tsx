@@ -31,7 +31,12 @@ export function SubscribeButton() {
         return;
       }
 
-      window.location.href = data.init_point;
+      const checkoutUrl = data.init_point || data.sandbox_init_point;
+      if (!checkoutUrl) {
+        alert("Erro: URL de checkout não retornada. Verifique as credenciais do Mercado Pago.");
+        return;
+      }
+      window.location.href = checkoutUrl;
     } catch {
       alert("Erro ao processar. Tente novamente.");
     } finally {

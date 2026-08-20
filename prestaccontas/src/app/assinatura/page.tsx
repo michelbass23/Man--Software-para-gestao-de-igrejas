@@ -44,7 +44,14 @@ export default function AssinaturaPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/payment/create", {
+      // Mensal → Preapproval (recorrência real)
+      // Anual → Checkout Pro (pagamento único)
+      const endpoint =
+        selectedPlan === "monthly"
+          ? "/api/subscription/create"
+          : "/api/payment/create";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: selectedPlan }),
@@ -58,8 +65,15 @@ export default function AssinaturaPage() {
         return;
       }
 
-      // Redirecionar para o checkout do Mercado Pago
-      window.location.href = data.init_point;
+      // Usar init_point (produção) ou sandbox_init_point (teste)
+      const checkoutUrl = data.init_point || data.sandbox_init_point;
+      if (!checkoutUrl) {
+        setError("Erro: URL de checkout não retornada. Verifique as credenciais do Mercado Pago.");
+        setLoading(false);
+        return;
+      }
+
+      window.location.href = checkoutUrl;
     } catch (err) {
       console.error("Erro ao processar pagamento:", err);
       setError("Erro ao processar. Tente novamente.");

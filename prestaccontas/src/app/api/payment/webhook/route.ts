@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
       const nextPayment = new Date();
       nextPayment.setMonth(nextPayment.getMonth() + months);
 
-      // Determinar plano baseado na duração
-      const planType = months >= 12 ? "annual" : "monthly";
+      // Determinar plano baseado na duração (valores compatíveis com CHECK constraint)
+      const planType = months >= 12 ? "pro" : "pro";
 
       await supabase
         .from("tenants")
