@@ -36,11 +36,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Detectar URL base automaticamente
+    // Detectar URL base: env var > origin header > host header
+    const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
     const origin = request.headers.get("origin") || "";
     const host = request.headers.get("host") || "localhost:3000";
     const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
-    const baseUrl = origin || (isLocalhost ? `http://${host}` : `https://${host}`);
+    const baseUrl = envUrl || origin || (isLocalhost ? `http://${host}` : `https://${host}`);
 
     // Datas obrigatórias para o checkout hospedado funcionar
     const now = new Date();
