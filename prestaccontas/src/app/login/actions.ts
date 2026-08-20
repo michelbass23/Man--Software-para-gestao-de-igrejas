@@ -7,7 +7,6 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 export async function signIn(prevState: string | null, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const redirectTo = (formData.get("redirect") as string) || "/dashboard";
 
   if (!email || !password) {
     return "Preencha todos os campos";
@@ -28,7 +27,7 @@ export async function signIn(prevState: string | null, formData: FormData) {
   // Verificar se tem profile
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id")
+    .select("id, tenant_id")
     .eq("id", data.user.id)
     .single();
 
@@ -37,8 +36,20 @@ export async function signIn(prevState: string | null, formData: FormData) {
     redirect("/setup");
   }
 
+  // Verificar se o tenant tem assinatura ativa
+  const { data: tenant } = await supabase
+    .from("tenants")
+    .select("status")
+    .eq("id", profile.tenant_id)
+    .single();
+
+  if (!tenant || (tenant.status !== "active" && tenant.status !== "trialing")) {
+    // Sem assinatura ativa, ir para pagamento
+    redirect("/assinatura");
+  }
+
   revalidatePath("/", "layout");
-  redirect(redirectTo);
+  redirect("/dashboard");
 }
 
 export async function signUp(
@@ -129,7 +140,8 @@ export async function signUp(
   }
 
   revalidatePath("/", "layout");
-  redirect(redirectTo);
+  // Após cadastro, direcionar para pagamento antes do dashboard
+  redirect("/assinatura");
 }
 
 export async function signOut() {

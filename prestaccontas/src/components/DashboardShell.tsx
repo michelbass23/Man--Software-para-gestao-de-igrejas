@@ -11,7 +11,15 @@ interface DashboardShellProps {
   tenantLogoUrl: string | null;
   userName: string;
   userRole: string;
+  tenantPlan?: string;
 }
+
+const PLAN_LABELS: Record<string, string> = {
+  monthly: "Mensal",
+  annual: "Anual",
+  pro: "Pro",
+  free: "Gratuito",
+};
 
 export default function DashboardShell({
   children,
@@ -19,6 +27,7 @@ export default function DashboardShell({
   tenantLogoUrl,
   userName,
   userRole,
+  tenantPlan = "monthly",
 }: DashboardShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -39,6 +48,8 @@ export default function DashboardShell({
         userRole={userRole}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
+        tenantPlan={tenantPlan}
+        planLabel={PLAN_LABELS[tenantPlan] || tenantPlan}
       />
 
       <div className="flex-1 flex flex-col lg:ml-64 min-h-screen">

@@ -17,16 +17,10 @@ export default function SubscriptionFailurePage() {
         </p>
         <div className="flex flex-col gap-3">
           <Link
-            href="/#pricing"
+            href="/assinatura"
             className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-colors"
           >
             Tentar Novamente
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl border border-border text-zinc-300 text-sm font-medium hover:bg-white/5 transition-colors"
-          >
-            Voltar ao Início
           </Link>
         </div>
       </div>

@@ -16,10 +16,10 @@ export default function SubscriptionPendingPage() {
           breve. Isso pode levar alguns minutos.
         </p>
         <Link
-          href="/"
+          href="/assinatura"
           className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-colors"
         >
-          Voltar ao Início
+          Verificar Status
         </Link>
       </div>
     </div>

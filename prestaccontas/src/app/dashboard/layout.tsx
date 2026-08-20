@@ -28,18 +28,20 @@ export default async function DashboardLayout({
     redirect("/setup");
   }
 
-  // Buscar nome e logo do tenant
+  // Buscar nome, logo e plano do tenant
   let tenantName = "Igreja";
   let tenantLogoUrl: string | null = null;
+  let tenantPlan = "monthly";
   if (profile.tenant_id) {
     const { data: tenant } = await supabase
       .from("tenants")
-      .select("name, logo_url")
+      .select("name, logo_url, plan")
       .eq("id", profile.tenant_id)
       .single();
     if (tenant) {
       tenantName = tenant.name;
       tenantLogoUrl = tenant.logo_url;
+      tenantPlan = tenant.plan || "monthly";
     }
   }
 
@@ -52,6 +54,7 @@ export default async function DashboardLayout({
       tenantLogoUrl={tenantLogoUrl}
       userName={userName}
       userRole={userRole}
+      tenantPlan={tenantPlan}
     >
       {children}
     </DashboardShell>

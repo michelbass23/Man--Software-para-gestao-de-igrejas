@@ -78,6 +78,8 @@ interface SidebarProps {
   userRole?: string;
   isOpen?: boolean;
   onClose?: () => void;
+  tenantPlan?: string;
+  planLabel?: string;
 }
 
 export default function Sidebar({
@@ -87,6 +89,8 @@ export default function Sidebar({
   userRole = "admin",
   isOpen = false,
   onClose,
+  tenantPlan = "monthly",
+  planLabel = "Mensal",
 }: SidebarProps) {
   const pathname = usePathname();
   const isAdmin = userRole === "admin";
@@ -169,7 +173,12 @@ export default function Sidebar({
               <p className="text-sm font-semibold text-zinc-100 truncate">
                 {tenantName}
               </p>
-              <p className="text-xs text-zinc-500 capitalize">{userRole}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-zinc-500 capitalize">{userRole}</p>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gold/20 text-gold font-medium">
+                  {planLabel}
+                </span>
+              </div>
             </div>
           </div>
 
