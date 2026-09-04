@@ -9,6 +9,7 @@ import {
   type ChurchEvent,
 } from "@/types/database";
 import { getActiveMembersWithPhone } from "@/app/dashboard/events/actions";
+import { showError, showToast } from "@/lib/alerts";
 
 interface WhatsAppSendModalProps {
   isOpen: boolean;
@@ -129,7 +130,7 @@ export default function WhatsAppSendModal({
     const selectedMembers = members.filter((m) => selectedIds.has(m.id));
 
     if (selectedMembers.length === 0) {
-      alert("Selecione pelo menos um membro");
+      showError("Nenhum membro selecionado", "Selecione pelo menos um membro");
       return;
     }
 
@@ -157,7 +158,7 @@ export default function WhatsAppSendModal({
   const handleCopyMessage = () => {
     const message = buildMessage();
     navigator.clipboard.writeText(message);
-    alert("Mensagem copiada para a área de transferência!");
+    showToast("Mensagem copiada para a área de transferência!");
   };
 
   if (!isOpen || !event) return null;

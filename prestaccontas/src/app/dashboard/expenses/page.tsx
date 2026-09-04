@@ -8,6 +8,7 @@ import ReceiptThumbnail from "@/components/ReceiptThumbnail";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { EXPENSE_CATEGORY_LABELS, type ExpenseCategory } from "@/types/database";
 import { getExpenses, createExpense, updateExpense, deleteExpense, getCurrentTenantId } from "./actions";
+import { confirmDelete, showError, showToast } from "@/lib/alerts";
 
 interface Expense {
   id: string;
@@ -71,12 +72,16 @@ export default function ExpensesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta despesa?")) return;
+    const confirmed = await confirmDelete({
+      text: "Tem certeza que deseja excluir esta despesa?",
+    });
+    if (!confirmed) return;
     const result = await deleteExpense(id);
     if (!result.error) {
       fetchExpenses();
+      showToast("Despesa excluída");
     } else {
-      alert(result.error);
+      showError("Erro ao excluir", result.error);
     }
   };
 

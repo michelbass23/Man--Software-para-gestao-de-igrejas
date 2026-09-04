@@ -17,6 +17,7 @@ import {
 import Image from "next/image";
 import MemberModal from "@/components/MemberModal";
 import { formatDate } from "@/lib/utils";
+import { confirmDelete, showError, showToast } from "@/lib/alerts";
 import {
   MEMBER_STATUS_LABELS,
   MEMBER_STATUSES,
@@ -89,13 +90,17 @@ export default function MembersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este membro?")) return;
+    const confirmed = await confirmDelete({
+      text: "Tem certeza que deseja excluir este membro?",
+    });
+    if (!confirmed) return;
     const result = await deleteMember(id);
     if (!result.error) {
       fetchMembers();
       fetchBirthdays();
+      showToast("Membro excluído");
     } else {
-      alert(result.error);
+      showError("Erro ao excluir", result.error);
     }
   };
 

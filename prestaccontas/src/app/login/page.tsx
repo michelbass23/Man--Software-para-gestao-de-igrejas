@@ -7,6 +7,7 @@ import { Eye, EyeOff, ArrowRight, UserPlus, Play, Loader2 } from "lucide-react";
 import { signIn, signUp } from "./actions";
 import { loginDemo } from "./demo-actions";
 import Image from "next/image";
+import Link from "next/link";
 import logoImg from "@/logo.png";
 
 export default function LoginPage() {
@@ -28,7 +29,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
   const [showPassword, setShowPassword] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [demoError, setDemoError] = useState<string | null>(null);
 
@@ -182,6 +183,29 @@ function LoginContent() {
               </div>
             </div>
 
+            {/* Aceite dos termos (apenas no cadastro) */}
+            {isSignUp && (
+              <label className="flex items-start gap-2 text-xs text-zinc-500">
+                <input
+                  type="checkbox"
+                  name="acceptTerms"
+                  required
+                  className="mt-0.5 accent-gold"
+                />
+                <span>
+                  Li e concordo com os{" "}
+                  <Link href="/termos" target="_blank" className="text-gold hover:underline">
+                    Termos de Uso
+                  </Link>{" "}
+                  e a{" "}
+                  <Link href="/privacidade" target="_blank" className="text-gold hover:underline">
+                    Política de Privacidade
+                  </Link>
+                  .
+                </span>
+              </label>
+            )}
+
             {/* Error message */}
             {error && (
               <div className="p-3 rounded-xl bg-ruby-dim border border-ruby/20">
@@ -281,6 +305,14 @@ function LoginContent() {
                 </>
               )}
             </p>
+            <a
+              href="https://wa.me/5571999445787"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-600 text-xs hover:text-zinc-400 transition-colors block mt-2"
+            >
+              Precisa de ajuda? Fale com o suporte
+            </a>
           </div>
         </div>
       </div>

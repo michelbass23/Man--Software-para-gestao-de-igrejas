@@ -36,18 +36,6 @@ export async function signIn(prevState: string | null, formData: FormData) {
     redirect("/setup");
   }
 
-  // Verificar se o tenant tem assinatura ativa
-  const { data: tenant } = await supabase
-    .from("tenants")
-    .select("status")
-    .eq("id", profile.tenant_id)
-    .single();
-
-  if (!tenant || (tenant.status !== "active" && tenant.status !== "trialing")) {
-    // Sem assinatura ativa, ir para pagamento
-    redirect("/assinatura");
-  }
-
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }
@@ -140,8 +128,7 @@ export async function signUp(
   }
 
   revalidatePath("/", "layout");
-  // Após cadastro, direcionar para pagamento antes do dashboard
-  redirect("/assinatura");
+  redirect("/dashboard");
 }
 
 export async function signOut() {

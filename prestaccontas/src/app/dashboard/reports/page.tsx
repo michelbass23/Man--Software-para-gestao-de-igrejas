@@ -13,6 +13,7 @@ import {
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { ENTRY_CATEGORY_LABELS, EXPENSE_CATEGORY_LABELS } from "@/types/database";
 import { getReportData } from "./actions";
+import { showError } from "@/lib/alerts";
 
 interface ReportData {
   churchName: string;
@@ -93,7 +94,7 @@ export default function ReportsPage() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      alert("Erro ao gerar PDF. Tente novamente.");
+      showError("Erro ao gerar PDF", "Tente novamente.");
     }
 
     setIsGeneratingPDF(false);

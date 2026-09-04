@@ -15,6 +15,7 @@ import {
   LogOut,
   Church,
   Settings,
+  History,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -61,6 +62,12 @@ const navItems = [
     label: "Equipe",
     href: "/dashboard/team",
     icon: Users,
+    adminOnly: true,
+  },
+  {
+    label: "Auditoria",
+    href: "/dashboard/audit",
+    icon: History,
     adminOnly: true,
   },
   {

@@ -346,3 +346,10 @@ export async function loginDemo() {
   revalidatePath("/", "layout");
   return { error: null, success: true, redirectTo: "/dashboard" };
 }
+
+// Sair da conta demo e ir para o cadastro (usado no prompt "Gostou do que viu?")
+export async function exitDemoToSignup() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+}

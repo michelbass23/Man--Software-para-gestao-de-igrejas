@@ -2,6 +2,7 @@
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logAudit } from "@/lib/audit";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -235,6 +236,13 @@ export async function updateUserRole(userId: string, newRole: string) {
     return "Você não pode alterar seu próprio papel";
   }
 
+  const { data: targetProfile } = await admin
+    .from("profiles")
+    .select("name, role")
+    .eq("id", userId)
+    .eq("tenant_id", tenantId)
+    .single();
+
   const { error } = await admin
     .from("profiles")
     .update({ role: newRole })
@@ -245,6 +253,14 @@ export async function updateUserRole(userId: string, newRole: string) {
     console.error("Erro ao atualizar papel:", error);
     return "Erro ao atualizar papel do usuário.";
   }
+
+  await logAudit({
+    action: "update",
+    entityType: "team_member",
+    entityId: userId,
+    entityLabel: targetProfile?.name || "Usuário",
+    metadata: { from: targetProfile?.role, to: newRole },
+  });
 
   revalidatePath("/dashboard/team");
   return null;
@@ -270,7 +286,7 @@ export async function removeUser(userId: string) {
 
   const { data: profile } = await admin
     .from("profiles")
-    .select("role")
+    .select("name, role")
     .eq("id", userId)
     .eq("tenant_id", tenantId)
     .single();
@@ -297,6 +313,14 @@ export async function removeUser(userId: string) {
     console.error("Erro ao remover usuário:", error);
     return "Erro ao remover usuário.";
   }
+
+  await logAudit({
+    action: "delete",
+    entityType: "team_member",
+    entityId: userId,
+    entityLabel: profile?.name || "Usuário",
+    metadata: { role: profile?.role },
+  });
 
   revalidatePath("/dashboard/team");
   return null;

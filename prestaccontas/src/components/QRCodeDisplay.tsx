@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw, Clock, Users, Loader2, ChevronDown, ChevronUp, UserCheck, Printer, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { showError, showToast } from "@/lib/alerts";
 import {
   generateAttendanceToken,
   getAttendanceStats,
@@ -48,7 +49,7 @@ export default function QRCodeDisplay({
     const result = await generateAttendanceToken(eventId);
 
     if (result.error) {
-      alert(result.error);
+      showError("Erro", result.error);
       setIsGenerating(false);
       return;
     }
@@ -314,7 +315,7 @@ export default function QRCodeDisplay({
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(fixedUrl);
-                    alert("Link copiado!");
+                    showToast("Link copiado!");
                   }}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 text-zinc-200 text-sm font-medium hover:bg-zinc-700 transition-colors"
                 >

@@ -12,6 +12,7 @@ interface MetricCardProps {
   suffix?: string;
   isCurrency?: boolean;
   trend?: { value: number; label: string };
+  invertTrendColor?: boolean;
   className?: string;
   delay?: number;
 }
@@ -50,10 +51,16 @@ export default function MetricCard({
   variant,
   isCurrency = true,
   trend,
+  invertTrendColor = false,
   className,
   delay = 0,
 }: MetricCardProps) {
   const styles = variantStyles[variant];
+  const trendIsPositive = trend
+    ? invertTrendColor
+      ? trend.value <= 0
+      : trend.value >= 0
+    : true;
 
   return (
     <div
@@ -77,7 +84,7 @@ export default function MetricCard({
           <span
             className={cn(
               "text-xs font-mono px-2 py-1 rounded-full",
-              trend.value >= 0
+              trendIsPositive
                 ? "bg-emerald-dim text-emerald"
                 : "bg-ruby-dim text-ruby"
             )}

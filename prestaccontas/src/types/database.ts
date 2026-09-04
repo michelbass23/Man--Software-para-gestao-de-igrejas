@@ -28,11 +28,25 @@ export interface Tenant {
   status: "active" | "inactive" | "trialing";
   plan: "free" | "pro" | "enterprise";
   logo_url?: string;
-  mercado_pago_preapproval_id?: string;
+  asaas_customer_id?: string;
+  asaas_subscription_id?: string;
+  cpf_cnpj?: string;
   subscription_started_at?: string;
   subscription_next_payment?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface WebhookLog {
+  id: string;
+  provider: string;
+  event?: string;
+  subscription_id?: string;
+  tenant_id?: string;
+  status: "processed" | "ignored" | "error";
+  error_message?: string;
+  payload?: unknown;
+  created_at: string;
 }
 
 export interface Profile {

@@ -47,6 +47,7 @@ export default async function DashboardLayout({
 
   const userName = profile.name || user.email?.split("@")[0] || "Usuário";
   const userRole = profile.role || "admin";
+  const isDemo = user.email === "demo@prestaccontas.com";
 
   return (
     <DashboardShell
@@ -55,6 +56,7 @@ export default async function DashboardLayout({
       userName={userName}
       userRole={userRole}
       tenantPlan={tenantPlan}
+      isDemo={isDemo}
     >
       {children}
     </DashboardShell>

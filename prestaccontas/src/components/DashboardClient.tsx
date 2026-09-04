@@ -15,6 +15,7 @@ import Image from "next/image";
 import MetricCard from "@/components/MetricCard";
 import DonutChart from "@/components/DonutChart";
 import MonthlyAreaChart from "@/components/AreaChart";
+import YearComparisonChart from "@/components/YearComparisonChart";
 import RecentTransactions from "@/components/RecentTransactions";
 import DashboardHeader from "@/components/DashboardHeader";
 import {
@@ -72,6 +73,19 @@ interface DashboardData {
       next_due_date?: string;
     }[];
   };
+  comparative: {
+    entriesTrend: number;
+    expensesTrend: number;
+    balanceTrend: number;
+  };
+  yearComparison: {
+    currentYear: number;
+    previousYear: number;
+    monthly: { month: string; entradasAtual: number; entradasAnterior: number }[];
+    totalEntriesCurrent: number;
+    totalEntriesPrevious: number;
+    entriesTrend: number;
+  };
 }
 
 const ENTRY_COLORS: Record<string, string> = {
@@ -115,7 +129,8 @@ function formatEventTime(timeStr?: string) {
 }
 
 export default function DashboardClient({ data }: { data: DashboardData }) {
-  const { metrics, monthlyData, recentTransactions, summary } = data;
+  const { metrics, monthlyData, recentTransactions, summary, comparative, yearComparison } =
+    data;
 
   const expensesByCategory = metrics.expensesByCategory.map((item) => ({
     name:
@@ -302,6 +317,10 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           icon={ArrowDownLeft}
           variant="gold"
           delay={400}
+          trend={{
+            value: comparative.entriesTrend,
+            label: "vs. mês anterior",
+          }}
         />
         <MetricCard
           title="Despesas do Mês"
@@ -309,6 +328,11 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           icon={ArrowUpRight}
           variant="ruby"
           delay={500}
+          trend={{
+            value: comparative.expensesTrend,
+            label: "vs. mês anterior",
+          }}
+          invertTrendColor
         />
         <MetricCard
           title="Saldo Atual"
@@ -316,6 +340,10 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           icon={Wallet}
           variant="emerald"
           delay={600}
+          trend={{
+            value: comparative.balanceTrend,
+            label: "vs. mês anterior",
+          }}
         />
       </div>
 
@@ -331,6 +359,21 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
             centerLabel="Total"
             centerValue={metrics.totalExpenses}
             height={220}
+          />
+        </div>
+      </div>
+
+      {/* Comparativo Ano a Ano */}
+      <div className="grid grid-cols-1 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div className="opacity-0 animate-fade-in stagger-4">
+          <YearComparisonChart
+            data={yearComparison.monthly}
+            currentYear={yearComparison.currentYear}
+            previousYear={yearComparison.previousYear}
+            totalCurrent={yearComparison.totalEntriesCurrent}
+            totalPrevious={yearComparison.totalEntriesPrevious}
+            trend={yearComparison.entriesTrend}
+            height={240}
           />
         </div>
       </div>

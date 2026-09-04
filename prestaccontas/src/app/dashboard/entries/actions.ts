@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logAudit, diffFields } from "@/lib/audit";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -144,7 +145,12 @@ export async function updateEntry(
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
-  console.log("updateEntry - receiptUrl recebido:", data.receiptUrl);
+  const { data: before } = await supabase
+    .from("entries")
+    .select("date, category, amount, description, person_name")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
 
   const updateData: Record<string, unknown> = {
     date: data.date,
@@ -155,9 +161,7 @@ export async function updateEntry(
     receipt_url: data.receiptUrl || null,
   };
 
-  console.log("updateEntry - updateData:", updateData);
-
-  const { data: result, error } = await supabase
+  const { error } = await supabase
     .from("entries")
     .update(updateData)
     .eq("id", id)
@@ -169,7 +173,23 @@ export async function updateEntry(
     return { error: `Erro ao atualizar entrada: ${error.message}` };
   }
 
-  console.log("updateEntry - resultado:", result);
+  const changes = diffFields(before, updateData, [
+    "date",
+    "category",
+    "amount",
+    "description",
+    "person_name",
+  ]);
+
+  if (Object.keys(changes).length > 0) {
+    await logAudit({
+      action: "update",
+      entityType: "entry",
+      entityId: id,
+      entityLabel: data.description || data.personName || data.category || "Entrada",
+      metadata: { changes },
+    });
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/entries");
@@ -179,6 +199,13 @@ export async function updateEntry(
 export async function deleteEntry(id: string) {
   const supabase = await createClient();
   const tenantId = await getTenantId();
+
+  const { data: existing } = await supabase
+    .from("entries")
+    .select("description, person_name, category, amount")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
 
   const { error } = await supabase
     .from("entries")
@@ -190,6 +217,15 @@ export async function deleteEntry(id: string) {
     console.error("Erro ao deletar entrada:", error);
     return { error: "Erro ao deletar entrada" };
   }
+
+  await logAudit({
+    action: "delete",
+    entityType: "entry",
+    entityId: id,
+    entityLabel:
+      existing?.description || existing?.person_name || existing?.category || "Entrada",
+    metadata: existing ? { amount: existing.amount, category: existing.category } : undefined,
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/entries");

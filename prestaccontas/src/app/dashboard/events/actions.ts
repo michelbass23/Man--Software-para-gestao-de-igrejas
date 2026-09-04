@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logAudit, diffFields } from "@/lib/audit";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -147,25 +148,55 @@ export async function updateEvent(
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
+  const { data: before } = await supabase
+    .from("events")
+    .select("title, description, event_type, event_date, event_time, location, responsible_name, status")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
+
+  const updateData = {
+    title: data.title,
+    description: data.description || null,
+    event_type: data.eventType,
+    event_date: data.eventDate,
+    event_time: data.eventTime || null,
+    location: data.location || null,
+    banner_url: data.bannerUrl || null,
+    responsible_name: data.responsibleName || null,
+    status: data.status || "ativo",
+  };
+
   const { error } = await supabase
     .from("events")
-    .update({
-      title: data.title,
-      description: data.description || null,
-      event_type: data.eventType,
-      event_date: data.eventDate,
-      event_time: data.eventTime || null,
-      location: data.location || null,
-      banner_url: data.bannerUrl || null,
-      responsible_name: data.responsibleName || null,
-      status: data.status || "ativo",
-    })
+    .update(updateData)
     .eq("id", id)
     .eq("tenant_id", tenantId);
 
   if (error) {
     console.error("Erro ao atualizar evento:", error);
     return { error: `Erro ao atualizar evento: ${error.message}` };
+  }
+
+  const changes = diffFields(before, updateData, [
+    "title",
+    "description",
+    "event_type",
+    "event_date",
+    "event_time",
+    "location",
+    "responsible_name",
+    "status",
+  ]);
+
+  if (Object.keys(changes).length > 0) {
+    await logAudit({
+      action: "update",
+      entityType: "event",
+      entityId: id,
+      entityLabel: data.title,
+      metadata: { changes },
+    });
   }
 
   revalidatePath("/dashboard");
@@ -177,6 +208,13 @@ export async function deleteEvent(id: string) {
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
+  const { data: existing } = await supabase
+    .from("events")
+    .select("title")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
+
   const { error } = await supabase
     .from("events")
     .delete()
@@ -187,6 +225,13 @@ export async function deleteEvent(id: string) {
     console.error("Erro ao deletar evento:", error);
     return { error: "Erro ao deletar evento" };
   }
+
+  await logAudit({
+    action: "delete",
+    entityType: "event",
+    entityId: id,
+    entityLabel: existing?.title || "Evento",
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/events");

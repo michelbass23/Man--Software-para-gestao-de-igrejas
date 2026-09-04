@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logAudit, diffFields } from "@/lib/audit";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -164,7 +165,12 @@ export async function updateExpense(
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
-  console.log("updateExpense - receiptUrl recebido:", data.receiptUrl);
+  const { data: before } = await supabase
+    .from("expenses")
+    .select("date, category, amount, description, person_name, status")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
 
   const updateData: Record<string, unknown> = {
     date: data.date,
@@ -192,6 +198,25 @@ export async function updateExpense(
   if (error) {
     console.error("Erro ao atualizar despesa:", error);
     return { error: `Erro ao atualizar despesa: ${error.message}` };
+  }
+
+  const changes = diffFields(before, updateData, [
+    "date",
+    "category",
+    "amount",
+    "description",
+    "person_name",
+    "status",
+  ]);
+
+  if (Object.keys(changes).length > 0) {
+    await logAudit({
+      action: "update",
+      entityType: "expense",
+      entityId: id,
+      entityLabel: data.description || data.personName || data.category || "Despesa",
+      metadata: { changes },
+    });
   }
 
   revalidatePath("/dashboard");
@@ -253,6 +278,13 @@ export async function deleteExpense(id: string) {
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
+  const { data: existing } = await supabase
+    .from("expenses")
+    .select("description, person_name, category, amount")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
+
   const { error } = await supabase
     .from("expenses")
     .delete()
@@ -263,6 +295,15 @@ export async function deleteExpense(id: string) {
     console.error("Erro ao deletar despesa:", error);
     return { error: "Erro ao deletar despesa" };
   }
+
+  await logAudit({
+    action: "delete",
+    entityType: "expense",
+    entityId: id,
+    entityLabel:
+      existing?.description || existing?.person_name || existing?.category || "Despesa",
+    metadata: existing ? { amount: existing.amount, category: existing.category } : undefined,
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/expenses");

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import Sidebar from "@/components/Sidebar";
 import MobileHeader from "@/components/MobileHeader";
 import AlertToast from "@/components/AlertToast";
+import DemoUpgradePrompt from "@/components/DemoUpgradePrompt";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ interface DashboardShellProps {
   userName: string;
   userRole: string;
   tenantPlan?: string;
+  isDemo?: boolean;
 }
 
 const PLAN_LABELS: Record<string, string> = {
@@ -28,6 +30,7 @@ export default function DashboardShell({
   userName,
   userRole,
   tenantPlan = "monthly",
+  isDemo = false,
 }: DashboardShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -64,6 +67,7 @@ export default function DashboardShell({
       </div>
 
       <AlertToast />
+      <DemoUpgradePrompt isDemo={isDemo} />
     </div>
   );
 }

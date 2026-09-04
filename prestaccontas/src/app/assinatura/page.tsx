@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Loader2, Check, CreditCard, Shield, ArrowRight, LogOut } from "lucide-react";
+import Link from "next/link";
 import { signOut } from "@/app/login/actions";
+import WhatsAppFloatButton from "@/components/WhatsAppFloatButton";
 
 type Plan = "monthly" | "annual";
 
@@ -34,27 +36,48 @@ const plans = {
   },
 };
 
+function formatCpfCnpj(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 14);
+  if (digits.length <= 11) {
+    return digits
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  }
+  return digits
+    .replace(/(\d{2})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1/$2")
+    .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+}
+
 export default function AssinaturaPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan>("monthly");
+  const [cpfCnpj, setCpfCnpj] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handlePayment() {
-    setLoading(true);
     setError(null);
 
-    try {
-      // Mensal → Preapproval (recorrência real)
-      // Anual → Checkout Pro (pagamento único)
-      const endpoint =
-        selectedPlan === "monthly"
-          ? "/api/subscription/create"
-          : "/api/payment/create";
+    const digits = cpfCnpj.replace(/\D/g, "");
+    if (digits.length !== 11 && digits.length !== 14) {
+      setError("Informe um CPF ou CNPJ válido");
+      return;
+    }
 
-      const response = await fetch(endpoint, {
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/subscription/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: selectedPlan }),
+        body: JSON.stringify({
+          plan: selectedPlan,
+          cpfCnpj: digits,
+          phone: phone.replace(/\D/g, "") || undefined,
+        }),
       });
 
       const data = await response.json();
@@ -65,15 +88,13 @@ export default function AssinaturaPage() {
         return;
       }
 
-      // Usar init_point (produção) ou sandbox_init_point (teste)
-      const checkoutUrl = data.init_point || data.sandbox_init_point;
-      if (!checkoutUrl) {
-        setError("Erro: URL de checkout não retornada. Verifique as credenciais do Mercado Pago.");
+      if (!data.checkoutUrl) {
+        setError("Erro: URL de checkout não retornada. Verifique as credenciais da Asaas.");
         setLoading(false);
         return;
       }
 
-      window.location.href = checkoutUrl;
+      window.location.href = data.checkoutUrl;
     } catch (err) {
       console.error("Erro ao processar pagamento:", err);
       setError("Erro ao processar. Tente novamente.");
@@ -171,6 +192,37 @@ export default function AssinaturaPage() {
           </ul>
         </div>
 
+        {/* Dados de cobrança */}
+        <div className="p-5 rounded-2xl border border-zinc-800 bg-zinc-900/30 mb-6 space-y-4">
+          <h3 className="text-sm font-medium text-zinc-300">
+            Dados de cobrança
+          </h3>
+          <div>
+            <label className="block text-xs text-zinc-500 mb-1.5">
+              CPF ou CNPJ *
+            </label>
+            <input
+              type="text"
+              value={cpfCnpj}
+              onChange={(e) => setCpfCnpj(formatCpfCnpj(e.target.value))}
+              placeholder="000.000.000-00"
+              className="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-gold/50"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-zinc-500 mb-1.5">
+              Telefone (opcional)
+            </label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="(00) 00000-0000"
+              className="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-gold/50"
+            />
+          </div>
+        </div>
+
         {/* Erro */}
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-red-950/50 border border-red-800/50">
@@ -199,9 +251,21 @@ export default function AssinaturaPage() {
         <div className="flex items-center justify-center gap-2 mt-4">
           <Shield className="w-4 h-4 text-zinc-600" />
           <p className="text-zinc-600 text-xs">
-            Pagamento seguro via Mercado Pago
+            Pagamento seguro via Asaas
           </p>
         </div>
+
+        <p className="text-center text-zinc-600 text-[11px] mt-3">
+          Ao assinar, você concorda com os{" "}
+          <Link href="/termos" target="_blank" className="text-gold hover:underline">
+            Termos de Uso
+          </Link>{" "}
+          e a{" "}
+          <Link href="/privacidade" target="_blank" className="text-gold hover:underline">
+            Política de Privacidade
+          </Link>
+          .
+        </p>
 
         {/* Métodos de pagamento */}
         <div className="flex items-center justify-center gap-4 mt-4">
@@ -223,6 +287,8 @@ export default function AssinaturaPage() {
           </button>
         </form>
       </div>
+
+      <WhatsAppFloatButton message="Olá! Estou com dúvida na hora de assinar o Maná Sistemas." />
     </div>
   );
 }

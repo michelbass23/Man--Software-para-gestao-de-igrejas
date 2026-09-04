@@ -8,6 +8,7 @@ import ReceiptThumbnail from "@/components/ReceiptThumbnail";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { ENTRY_CATEGORY_LABELS, type EntryCategory } from "@/types/database";
 import { getEntries, createEntry, updateEntry, deleteEntry, getCurrentTenantId } from "./actions";
+import { confirmDelete, showError, showToast } from "@/lib/alerts";
 
 interface Entry {
   id: string;
@@ -71,12 +72,16 @@ export default function EntriesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este lançamento?")) return;
+    const confirmed = await confirmDelete({
+      text: "Tem certeza que deseja excluir este lançamento?",
+    });
+    if (!confirmed) return;
     const result = await deleteEntry(id);
     if (!result.error) {
       fetchEntries();
+      showToast("Lançamento excluído");
     } else {
-      alert(result.error);
+      showError("Erro ao excluir", result.error);
     }
   };
 

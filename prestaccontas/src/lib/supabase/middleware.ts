@@ -36,12 +36,16 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Rotas públicas (não precisam de autenticação)
-  const publicPaths = ["/", "/login", "/api/auth", "/checkin"];
+  const publicPaths = ["/", "/login", "/api/auth", "/checkin", "/termos", "/privacidade"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
-  // Rotas de pagamento/assinatura (precisam de auth mas não de assinatura ativa)
-  const paymentPaths = ["/assinatura", "/api/payment", "/api/subscription"];
-  const isPaymentPath = paymentPaths.some((path) => pathname.startsWith(path));
+  // Rotas de API (não redirecionar, retornar JSON)
+  const isApiPath = pathname.startsWith("/api/");
+
+  // Se não autenticado e é rota de API, deixar a própria API tratar o erro
+  if (!user && isApiPath) {
+    return supabaseResponse;
+  }
 
   // Se não autenticado e não é rota pública, redirecionar para login
   if (!user && !isPublicPath) {
@@ -57,14 +61,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Se autenticado e está no setup ou pagamento, permitir
-  if (user && (pathname === "/setup" || isPaymentPath)) {
+  // Se autenticado e está no setup, permitir
+  if (user && pathname === "/setup") {
     return supabaseResponse;
   }
 
-  // Se autenticado e acessando dashboard, verificar assinatura ativa
+  // Se autenticado e acessando dashboard, verificar apenas se tem profile
   if (user && pathname.startsWith("/dashboard")) {
-    // Buscar profile para pegar tenant_id
     const { data: profile } = await supabase
       .from("profiles")
       .select("tenant_id")
@@ -72,29 +75,8 @@ export async function updateSession(request: NextRequest) {
       .single();
 
     if (!profile) {
-      // Sem profile, ir para setup
       const url = request.nextUrl.clone();
       url.pathname = "/setup";
-      return NextResponse.redirect(url);
-    }
-
-    // Verificar se o tenant tem assinatura ativa
-    const { data: tenant } = await supabase
-      .from("tenants")
-      .select("status, plan")
-      .eq("id", profile.tenant_id)
-      .single();
-
-    // Se não tem assinatura ativa (nem trial), redirecionar para pagamento
-    // Aceitar "active", "trialing" ou plan "free" como válidos
-    const hasActiveSubscription = tenant && 
-      (tenant.status === "active" || 
-       tenant.status === "trialing" || 
-       tenant.plan === "free");
-    
-    if (!hasActiveSubscription) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/assinatura";
       return NextResponse.redirect(url);
     }
   }

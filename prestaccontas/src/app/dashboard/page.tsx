@@ -3,16 +3,21 @@ import {
   getMonthlyData,
   getRecentTransactions,
   getDashboardSummary,
+  getComparativeMetrics,
+  getYearComparison,
 } from "./actions";
 import DashboardClient from "@/components/DashboardClient";
 
 export default async function DashboardPage() {
-  const [metrics, monthlyData, recentTransactions, summary] = await Promise.all([
-    getDashboardMetrics(),
-    getMonthlyData(),
-    getRecentTransactions(8),
-    getDashboardSummary(),
-  ]);
+  const [metrics, monthlyData, recentTransactions, summary, comparative, yearComparison] =
+    await Promise.all([
+      getDashboardMetrics(),
+      getMonthlyData(),
+      getRecentTransactions(8),
+      getDashboardSummary(),
+      getComparativeMetrics(),
+      getYearComparison(),
+    ]);
 
   return (
     <DashboardClient
@@ -21,6 +26,8 @@ export default async function DashboardPage() {
         monthlyData,
         recentTransactions,
         summary,
+        comparative,
+        yearComparison,
       }}
     />
   );

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logAudit, diffFields } from "@/lib/audit";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -150,26 +151,57 @@ export async function updateMember(
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
+  const { data: before } = await supabase
+    .from("members")
+    .select("name, phone, email, birth_date, baptism_date, marital_status, ministry, status, notes")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
+
+  const updateData = {
+    name: data.name,
+    phone: data.phone || null,
+    email: data.email || null,
+    birth_date: data.birthDate || null,
+    baptism_date: data.baptismDate || null,
+    marital_status: data.maritalStatus || null,
+    ministry: data.ministry || null,
+    status: data.status || "ativo",
+    notes: data.notes || null,
+    photo_url: data.photoUrl || null,
+  };
+
   const { error } = await supabase
     .from("members")
-    .update({
-      name: data.name,
-      phone: data.phone || null,
-      email: data.email || null,
-      birth_date: data.birthDate || null,
-      baptism_date: data.baptismDate || null,
-      marital_status: data.maritalStatus || null,
-      ministry: data.ministry || null,
-      status: data.status || "ativo",
-      notes: data.notes || null,
-      photo_url: data.photoUrl || null,
-    })
+    .update(updateData)
     .eq("id", id)
     .eq("tenant_id", tenantId);
 
   if (error) {
     console.error("Erro ao atualizar membro:", error);
     return { error: `Erro ao atualizar membro: ${error.message}` };
+  }
+
+  const changes = diffFields(before, updateData, [
+    "name",
+    "phone",
+    "email",
+    "birth_date",
+    "baptism_date",
+    "marital_status",
+    "ministry",
+    "status",
+    "notes",
+  ]);
+
+  if (Object.keys(changes).length > 0) {
+    await logAudit({
+      action: "update",
+      entityType: "member",
+      entityId: id,
+      entityLabel: data.name,
+      metadata: { changes },
+    });
   }
 
   revalidatePath("/dashboard");
@@ -181,6 +213,13 @@ export async function deleteMember(id: string) {
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
+  const { data: existing } = await supabase
+    .from("members")
+    .select("name")
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .single();
+
   const { error } = await supabase
     .from("members")
     .delete()
@@ -191,6 +230,13 @@ export async function deleteMember(id: string) {
     console.error("Erro ao deletar membro:", error);
     return { error: "Erro ao deletar membro" };
   }
+
+  await logAudit({
+    action: "delete",
+    entityType: "member",
+    entityId: id,
+    entityLabel: existing?.name || "Membro",
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/members");

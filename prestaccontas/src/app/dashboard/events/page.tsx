@@ -35,6 +35,7 @@ import {
 import EventModal from "@/components/EventModal";
 import WhatsAppSendModal from "@/components/WhatsAppSendModal";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
+import { confirmDelete, showError, showToast } from "@/lib/alerts";
 
 export default function EventsPage() {
   const [events, setEvents] = useState<ChurchEvent[]>([]);
@@ -86,12 +87,16 @@ export default function EventsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este evento?")) return;
+    const confirmed = await confirmDelete({
+      text: "Tem certeza que deseja excluir este evento?",
+    });
+    if (!confirmed) return;
     const result = await deleteEvent(id);
     if (!result.error) {
       fetchEvents();
+      showToast("Evento excluído");
     } else {
-      alert(result.error);
+      showError("Erro ao excluir", result.error);
     }
   };
 

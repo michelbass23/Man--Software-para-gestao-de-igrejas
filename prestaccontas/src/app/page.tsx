@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -15,20 +16,33 @@ import {
   ArrowRight,
   ChevronDown,
   ChevronUp,
-  Star,
   Zap,
   Heart,
   FileText,
   Smartphone,
   Menu,
   X,
+  Loader2,
 } from "lucide-react";
 import logoImg from "@/logo.png";
-import { SubscribeButton } from "@/components/SubscribeButton";
+import WhatsAppFloatButton from "@/components/WhatsAppFloatButton";
+import { loginDemo } from "@/app/login/demo-actions";
 
 export default function LandingPage() {
+  const router = useRouter();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
+
+  const handleDemo = async () => {
+    setIsDemoLoading(true);
+    const result = await loginDemo();
+    if ("redirectTo" in result && result.redirectTo) {
+      router.push(result.redirectTo);
+    } else {
+      setIsDemoLoading(false);
+    }
+  };
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -160,27 +174,6 @@ export default function LandingPage() {
     },
   ];
 
-  const testimonials = [
-    {
-      name: "Pr. Marcos Silva",
-      church: "Igreja Comunidade da Graça",
-      text: "O Maná Sistemas transformou nossa prestação de contas. Antes levávamos dias para preparar relatórios, agora é instantâneo.",
-      rating: 5,
-    },
-    {
-      name: "Ana Beatriz",
-      church: "Igreja Batista Central",
-      text: "O check-in por QR Code é incrível! Nossos membros adoraram a praticidade. Nunca mais perdemos lista de presença.",
-      rating: 5,
-    },
-    {
-      name: "Pr. João Oliveira",
-      church: "Assembleia de Deus",
-      text: "Sistema completo e fácil de usar. A gestão financeira ficou transparente e os relatórios são profissionais.",
-      rating: 5,
-    },
-  ];
-
   const faqs = [
     {
       question: "Preciso instalar algum aplicativo?",
@@ -295,12 +288,14 @@ export default function LandingPage() {
               >
                 Entrar
               </Link>
-              <Link
-                href="/login"
-                className="px-4 py-2 rounded-xl bg-gold text-black text-sm font-medium hover:bg-gold/90 transition-colors"
+              <button
+                onClick={handleDemo}
+                disabled={isDemoLoading}
+                className="px-4 py-2 rounded-xl bg-gold text-black text-sm font-medium hover:bg-gold/90 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
+                {isDemoLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Ver Demonstração
-              </Link>
+              </button>
             </div>
 
             {/* Mobile menu button */}
@@ -371,13 +366,17 @@ export default function LandingPage() {
                   >
                     Entrar
                   </Link>
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-all"
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleDemo();
+                    }}
+                    disabled={isDemoLoading}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-all disabled:opacity-50"
                   >
+                    {isDemoLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                     Ver Demonstração
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -417,13 +416,18 @@ export default function LandingPage() {
 
             {/* CTAs */}
             <div className="flex items-center justify-center">
-              <Link
-                href="/login"
-                className="w-full sm:w-auto px-10 py-4 rounded-xl bg-gold text-black text-base font-semibold hover:bg-gold/90 transition-all flex items-center justify-center gap-2"
+              <button
+                onClick={handleDemo}
+                disabled={isDemoLoading}
+                className="w-full sm:w-auto px-10 py-4 rounded-xl bg-gold text-black text-base font-semibold hover:bg-gold/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <Play className="w-5 h-5" />
+                {isDemoLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Play className="w-5 h-5" />
+                )}
                 Ver Demonstração
-              </Link>
+              </button>
             </div>
 
 
@@ -642,44 +646,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 md:py-32 bg-zinc-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-zinc-100 mb-4">
-              O que dizem <span className="text-gold">nossos clientes</span>
-            </h2>
-            <p className="text-zinc-400 text-lg">
-              Mais de 500 igrejas já confiam no Maná Sistemas
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, i) => (
-              <div key={i} className="glass-card p-6 rounded-xl">
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: testimonial.rating }).map((_, j) => (
-                    <Star
-                      key={j}
-                      className="w-4 h-4 text-gold fill-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-zinc-300 text-sm mb-4 leading-relaxed">
-                  &ldquo;{testimonial.text}&rdquo;
-                </p>
-                <div>
-                  <p className="text-zinc-200 font-medium text-sm">
-                    {testimonial.name}
-                  </p>
-                  <p className="text-zinc-500 text-xs">{testimonial.church}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Pricing */}
       <section id="pricing" className="py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -728,7 +694,12 @@ export default function LandingPage() {
                   ))}
                 </ul>
 
-                <SubscribeButton />
+                <a
+                  href="/login"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gold text-black text-base font-semibold hover:bg-gold/90 transition-colors"
+                >
+                  Começar agora
+                </a>
               </div>
             ))}
           </div>
@@ -784,13 +755,18 @@ export default function LandingPage() {
                 Conheça todas as funcionalidades na demonstração completa.
               </p>
               <div className="flex items-center justify-center">
-                <Link
-                  href="/login"
-                  className="w-full sm:w-auto px-10 py-4 rounded-xl bg-gold text-black text-base font-semibold hover:bg-gold/90 transition-all flex items-center justify-center gap-2"
+                <button
+                  onClick={handleDemo}
+                  disabled={isDemoLoading}
+                  className="w-full sm:w-auto px-10 py-4 rounded-xl bg-gold text-black text-base font-semibold hover:bg-gold/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <Play className="w-5 h-5" />
+                  {isDemoLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Play className="w-5 h-5" />
+                  )}
                   Ver Demonstração
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -840,6 +816,26 @@ export default function LandingPage() {
               >
                 Entrar
               </Link>
+              <Link
+                href="/termos"
+                className="hover:text-zinc-300 transition-colors"
+              >
+                Termos de Uso
+              </Link>
+              <Link
+                href="/privacidade"
+                className="hover:text-zinc-300 transition-colors"
+              >
+                Privacidade
+              </Link>
+              <a
+                href="https://wa.me/5571999445787"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-zinc-300 transition-colors"
+              >
+                Suporte: (71) 99944-5787
+              </a>
             </div>
 
             <p className="text-xs text-zinc-600">
@@ -848,6 +844,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <WhatsAppFloatButton />
     </div>
   );
 }

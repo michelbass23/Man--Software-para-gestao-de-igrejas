@@ -17,6 +17,7 @@ import ReceiptViewer from "@/components/ReceiptViewer";
 import ReceiptThumbnail from "@/components/ReceiptThumbnail";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { EXPENSE_CATEGORY_LABELS, type ExpenseCategory } from "@/types/database";
+import { confirmDelete, showError, showToast } from "@/lib/alerts";
 import {
   getFixedExpenses,
   createExpense,
@@ -110,10 +111,16 @@ export default function FixedExpensesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta despesa fixa?")) return;
+    const confirmed = await confirmDelete({
+      text: "Tem certeza que deseja excluir esta despesa fixa?",
+    });
+    if (!confirmed) return;
     const result = await deleteExpense(id);
     if (!result.error) {
       fetchExpenses();
+      showToast("Despesa fixa excluída");
+    } else {
+      showError("Erro ao excluir", result.error);
     }
   };
 

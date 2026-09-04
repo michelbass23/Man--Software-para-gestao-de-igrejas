@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-const MERCADO_PAGO_API = "https://api.mercadopago.com";
+import {
+  AsaasError,
+  createSubscription,
+  findOrCreateCustomer,
+  getSubscriptionCheckoutUrl,
+  type AsaasPlan,
+} from "@/lib/asaas";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,10 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
-    // Buscar o tenant do usuário
     const { data: profile } = await supabase
       .from("profiles")
-      .select("tenant_id, tenants(*)")
+      .select("tenant_id, name, tenants(*)")
       .eq("id", user.id)
       .single();
 
@@ -28,86 +32,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
-    if (!accessToken) {
+    const body = await request.json();
+    const plan: AsaasPlan = body.plan === "annual" ? "annual" : "monthly";
+    const cpfCnpj: string = (body.cpfCnpj || "").replace(/\D/g, "");
+    const phone: string | undefined = body.phone;
+
+    if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
       return NextResponse.json(
-        { error: "Configuração de pagamento não encontrada" },
-        { status: 500 }
+        { error: "CPF ou CNPJ inválido" },
+        { status: 400 }
       );
     }
 
-    // Detectar URL base: env var > origin header > host header
-    const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    const origin = request.headers.get("origin") || "";
-    const host = request.headers.get("host") || "localhost:3000";
-    const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
-    const baseUrl = envUrl || origin || (isLocalhost ? `http://${host}` : `https://${host}`);
-
-    // Datas obrigatórias para o checkout hospedado funcionar
-    const now = new Date();
-    const startDate = now.toISOString();
-    const endDate = new Date(
-      now.getFullYear() + 10,
-      now.getMonth(),
-      now.getDate()
-    ).toISOString();
-
-    const body = {
-      reason: "Mana Sistemas - Plano Completo",
-      auto_recurring: {
-        frequency: 1,
-        frequency_type: "months",
-        transaction_amount: 147.0,
-        currency_id: "BRL",
-        start_date: startDate,
-        end_date: endDate,
-      },
-      back_url: `${baseUrl}/assinatura/sucesso`,
-      payer_email: user.email,
-      external_reference: profile.tenant_id,
-      notification_url: `${baseUrl}/api/subscription/webhook`,
-      status: "pending",
-    };
-
-    console.log("Criando preapproval com body:", JSON.stringify(body, null, 2));
-
-    // Criar preapproval (assinatura recorrente) no Mercado Pago
-    const preapprovalResponse = await fetch(
-      `${MERCADO_PAGO_API}/preapproval`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(body),
-      }
-    );
-
-    const responseText = await preapprovalResponse.text();
-    console.log("Resposta MP status:", preapprovalResponse.status);
-    console.log("Resposta MP body:", responseText);
-
-    if (!preapprovalResponse.ok) {
-      return NextResponse.json(
-        {
-          error: `Mercado Pago erro (${preapprovalResponse.status}): ${responseText}`,
-        },
-        { status: 500 }
-      );
-    }
-
-    const preapproval = JSON.parse(responseText);
-
-    return NextResponse.json({
-      id: preapproval.id,
-      init_point: preapproval.init_point,
+    const customer = await findOrCreateCustomer({
+      tenantId: profile.tenant_id,
+      name: (profile.name as string) || user.email || "Cliente",
+      email: user.email!,
+      cpfCnpj,
+      phone,
     });
+
+    const subscription = await createSubscription({
+      customerId: customer.id,
+      tenantId: profile.tenant_id,
+      plan,
+    });
+
+    const checkoutUrl = await getSubscriptionCheckoutUrl(subscription.id);
+
+    await supabase
+      .from("tenants")
+      .update({
+        asaas_customer_id: customer.id,
+        asaas_subscription_id: subscription.id,
+        cpf_cnpj: cpfCnpj,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", profile.tenant_id);
+
+    return NextResponse.json({ checkoutUrl });
   } catch (error) {
-    console.error("Erro na criação de assinatura:", error);
-    return NextResponse.json(
-      { error: `Erro interno: ${error}` },
-      { status: 500 }
-    );
+    console.error("Erro ao criar assinatura:", error);
+    const status = error instanceof AsaasError ? error.status : 500;
+    const message = error instanceof Error ? error.message : "Erro interno";
+    return NextResponse.json({ error: message }, { status });
   }
 }

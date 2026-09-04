@@ -197,30 +197,35 @@ body {
 
 /* ============================================================
    Input Styles
+   ============================================================
+   Em @layer base para que utilities do Tailwind (ex: pl-10 para
+   inputs com ícone/prefixo) tenham prioridade sobre este padding.
    ============================================================ */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="date"],
-select,
-textarea {
-  background: rgba(24, 24, 27, 0.6);
-  border: 1px solid var(--color-border-light);
-  border-radius: 10px;
-  padding: 10px 14px;
-  color: var(--color-foreground);
-  font-size: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-  width: 100%;
-}
+@layer base {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    background: rgba(24, 24, 27, 0.6);
+    border: 1px solid var(--color-border-light);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--color-foreground);
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
 
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 3px var(--color-gold-dim);
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 3px var(--color-gold-dim);
+  }
 }
 
 /* ============================================================

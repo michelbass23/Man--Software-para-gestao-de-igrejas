@@ -15,6 +15,7 @@ import {
   Key,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { confirmDelete, showToast } from "@/lib/alerts";
 import {
   getTeamMembers,
   inviteUser,
@@ -170,7 +171,10 @@ export default function TeamPage() {
   };
 
   const handleRemove = async (userId: string) => {
-    if (!confirm("Tem certeza que deseja remover este usuário?")) return;
+    const confirmed = await confirmDelete({
+      text: "Tem certeza que deseja remover este usuário?",
+    });
+    if (!confirmed) return;
 
     const error = await removeUser(userId);
     if (error) {
@@ -178,6 +182,7 @@ export default function TeamPage() {
       setTimeout(() => setActionError(null), 3000);
     } else {
       fetchMembers();
+      showToast("Usuário removido");
     }
   };
 

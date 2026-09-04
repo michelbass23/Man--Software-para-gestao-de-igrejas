@@ -134,6 +134,62 @@ export async function getMonthlyData(year?: number) {
   return months;
 }
 
+function pctChange(current: number, previous: number): number {
+  if (previous === 0) return current === 0 ? 0 : 100;
+  return Math.round(((current - previous) / previous) * 100);
+}
+
+export async function getComparativeMetrics() {
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const prevMonthDate = new Date(currentYear, now.getMonth() - 1, 1);
+
+  const [current, previous] = await Promise.all([
+    getDashboardMetrics(currentMonth, currentYear),
+    getDashboardMetrics(prevMonthDate.getMonth() + 1, prevMonthDate.getFullYear()),
+  ]);
+
+  return {
+    entriesTrend: pctChange(current.totalEntries, previous.totalEntries),
+    expensesTrend: pctChange(current.totalExpenses, previous.totalExpenses),
+    balanceTrend: pctChange(current.netBalance, previous.netBalance),
+  };
+}
+
+export async function getYearComparison() {
+  const currentYear = new Date().getFullYear();
+  const previousYear = currentYear - 1;
+
+  const [currentYearData, previousYearData] = await Promise.all([
+    getMonthlyData(currentYear),
+    getMonthlyData(previousYear),
+  ]);
+
+  const monthly = currentYearData.map((m, i) => ({
+    month: m.month,
+    entradasAtual: m.entradas,
+    entradasAnterior: previousYearData[i]?.entradas ?? 0,
+  }));
+
+  const totalEntriesCurrent = currentYearData.reduce((s, m) => s + m.entradas, 0);
+  const totalEntriesPrevious = previousYearData.reduce((s, m) => s + m.entradas, 0);
+  const totalExpensesCurrent = currentYearData.reduce((s, m) => s + m.saidas, 0);
+  const totalExpensesPrevious = previousYearData.reduce((s, m) => s + m.saidas, 0);
+
+  return {
+    currentYear,
+    previousYear,
+    monthly,
+    totalEntriesCurrent,
+    totalEntriesPrevious,
+    totalExpensesCurrent,
+    totalExpensesPrevious,
+    entriesTrend: pctChange(totalEntriesCurrent, totalEntriesPrevious),
+    expensesTrend: pctChange(totalExpensesCurrent, totalExpensesPrevious),
+  };
+}
+
 interface Transaction {
   id: string;
   type: "entry" | "expense";
