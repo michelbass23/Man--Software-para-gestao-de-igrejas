@@ -1,6 +1,7 @@
 import DashboardShell from "@/components/DashboardShell";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTenantAccess } from "@/lib/subscription";
+import { reconcileTenantAccess } from "@/lib/subscription-reconcile";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -43,7 +44,7 @@ export default async function DashboardLayout({
     const { data: tenant } = await supabase
       .from("tenants")
       .select(
-        "name, logo_url, plan, status, created_at, subscription_started_at, subscription_overdue_since"
+        "name, logo_url, plan, status, created_at, subscription_started_at, subscription_overdue_since, asaas_subscription_id"
       )
       .eq("id", profile.tenant_id)
       .single();
@@ -53,7 +54,20 @@ export default async function DashboardLayout({
       tenantLogoUrl = tenant.logo_url;
       tenantPlan = tenant.plan || "free";
 
-      const access = resolveTenantAccess(tenant);
+      let access = resolveTenantAccess(tenant);
+
+      // Usuário que pagou mas cujo webhook da Asaas ainda não chegou ficaria
+      // preso no TrialGate / tela de bloqueio. Nesses estados, confere direto
+      // com a Asaas antes de barrar o acesso.
+      if (
+        (access.state === "trial_expired" || access.state === "blocked") &&
+        tenant.asaas_subscription_id
+      ) {
+        access = await reconcileTenantAccess(profile.tenant_id, tenant);
+        if (access.state === "active") {
+          tenantPlan = "pro";
+        }
+      }
 
       // Acesso suspenso (carência esgotada): bloqueia o acesso ao painel.
       if (access.state === "blocked" && !isDemo) {
