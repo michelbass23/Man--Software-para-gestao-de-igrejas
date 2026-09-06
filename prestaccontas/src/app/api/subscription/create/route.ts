@@ -4,6 +4,7 @@ import {
   AsaasError,
   createSubscription,
   findOrCreateCustomer,
+  getSubscription,
   getSubscriptionCheckoutUrl,
   type AsaasPlan,
 } from "@/lib/asaas";
@@ -30,6 +31,27 @@ export async function POST(request: NextRequest) {
         { error: "Tenant não encontrado" },
         { status: 404 }
       );
+    }
+
+    const rawTenant = profile.tenants as unknown;
+    const tenant = (Array.isArray(rawTenant) ? rawTenant[0] : rawTenant) as {
+      asaas_subscription_id?: string | null;
+    };
+
+    // Já existe assinatura na Asaas para esse tenant: reaproveita o link de
+    // pagamento em aberto em vez de criar uma segunda assinatura.
+    if (tenant?.asaas_subscription_id) {
+      try {
+        const existing = await getSubscription(tenant.asaas_subscription_id);
+        if (existing.status !== "INACTIVE") {
+          const checkoutUrl = await getSubscriptionCheckoutUrl(
+            tenant.asaas_subscription_id
+          );
+          return NextResponse.json({ checkoutUrl });
+        }
+      } catch {
+        // Assinatura não encontrada na Asaas: segue o fluxo normal e cria uma nova.
+      }
     }
 
     const body = await request.json();

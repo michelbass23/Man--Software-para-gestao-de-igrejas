@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { getSubscription } from "@/lib/asaas";
 
 const CONFIRMED_EVENTS = ["PAYMENT_CONFIRMED", "PAYMENT_RECEIVED"];
+const OVERDUE_EVENTS = ["PAYMENT_OVERDUE"];
 
 async function logWebhookEvent(params: {
   event?: string;
@@ -43,20 +44,16 @@ export async function POST(request: NextRequest) {
 
     body = await request.json();
     const subscriptionId = body.payment?.subscription;
+    const event = body.event ?? "";
 
-    if (!CONFIRMED_EVENTS.includes(body.event ?? "")) {
-      await logWebhookEvent({
-        event: body.event,
-        subscriptionId,
-        status: "ignored",
-        payload: body,
-      });
+    if (!CONFIRMED_EVENTS.includes(event) && !OVERDUE_EVENTS.includes(event)) {
+      await logWebhookEvent({ event, subscriptionId, status: "ignored", payload: body });
       return NextResponse.json({ received: true });
     }
 
     if (!subscriptionId) {
       await logWebhookEvent({
-        event: body.event,
+        event,
         status: "ignored",
         errorMessage: "Sem subscription no payload",
         payload: body,
@@ -68,13 +65,13 @@ export async function POST(request: NextRequest) {
 
     const { data: tenant } = await admin
       .from("tenants")
-      .select("id, subscription_started_at")
+      .select("id, status, subscription_started_at")
       .eq("asaas_subscription_id", subscriptionId)
       .single();
 
     if (!tenant) {
       await logWebhookEvent({
-        event: body.event,
+        event,
         subscriptionId,
         status: "error",
         errorMessage: "Tenant não encontrado para essa subscription",
@@ -83,23 +80,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    const subscription = await getSubscription(subscriptionId);
+    if (CONFIRMED_EVENTS.includes(event)) {
+      const subscription = await getSubscription(subscriptionId);
 
-    const updateData: Record<string, unknown> = {
-      status: "active",
-      plan: "pro",
-      subscription_next_payment: subscription.nextDueDate,
-      updated_at: new Date().toISOString(),
-    };
+      const updateData: Record<string, unknown> = {
+        status: "active",
+        plan: "pro",
+        subscription_next_payment: subscription.nextDueDate,
+        subscription_overdue_since: null,
+        updated_at: new Date().toISOString(),
+      };
 
-    if (!tenant.subscription_started_at) {
-      updateData.subscription_started_at = new Date().toISOString();
+      if (!tenant.subscription_started_at) {
+        updateData.subscription_started_at = new Date().toISOString();
+      }
+
+      await admin.from("tenants").update(updateData).eq("id", tenant.id);
+    } else if (OVERDUE_EVENTS.includes(event)) {
+      // Só marca o início da carência na primeira vez que entra em atraso;
+      // eventos repetidos (ex: outra fatura vencendo) não devem resetar o prazo.
+      const updateData: Record<string, unknown> = {
+        updated_at: new Date().toISOString(),
+      };
+
+      if (tenant.status !== "overdue" && tenant.status !== "inactive") {
+        updateData.status = "overdue";
+        updateData.subscription_overdue_since = new Date().toISOString();
+      }
+
+      await admin.from("tenants").update(updateData).eq("id", tenant.id);
     }
 
-    await admin.from("tenants").update(updateData).eq("id", tenant.id);
-
     await logWebhookEvent({
-      event: body.event,
+      event,
       subscriptionId,
       tenantId: tenant.id,
       status: "processed",

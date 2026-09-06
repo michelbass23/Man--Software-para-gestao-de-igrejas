@@ -96,8 +96,8 @@ export default function Sidebar({
   userRole = "admin",
   isOpen = false,
   onClose,
-  tenantPlan = "monthly",
-  planLabel = "Mensal",
+  tenantPlan = "free",
+  planLabel = "Gratuito",
 }: SidebarProps) {
   const pathname = usePathname();
   const isAdmin = userRole === "admin";

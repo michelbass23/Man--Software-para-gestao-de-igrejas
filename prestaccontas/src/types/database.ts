@@ -25,7 +25,7 @@ export interface Tenant {
   id: string;
   name: string;
   slug: string;
-  status: "active" | "inactive" | "trialing";
+  status: "active" | "inactive" | "trialing" | "overdue";
   plan: "free" | "pro" | "enterprise";
   logo_url?: string;
   asaas_customer_id?: string;
@@ -33,6 +33,7 @@ export interface Tenant {
   cpf_cnpj?: string;
   subscription_started_at?: string;
   subscription_next_payment?: string;
+  subscription_overdue_since?: string;
   created_at: string;
   updated_at: string;
 }

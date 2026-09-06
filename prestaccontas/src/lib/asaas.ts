@@ -100,18 +100,43 @@ export async function createSubscription(params: {
   const config = PLAN_CONFIG[params.plan];
   const nextDueDate = new Date().toISOString().split("T")[0];
 
-  return asaasFetch<AsaasSubscription>("/subscriptions", {
-    method: "POST",
-    body: JSON.stringify({
-      customer: params.customerId,
-      billingType: "UNDEFINED",
-      cycle: config.cycle,
-      value: config.value,
-      nextDueDate,
-      description: config.description,
-      externalReference: params.tenantId,
-    }),
-  });
+  // Após pagar na Asaas, o usuário é redirecionado de volta para o app.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const callback = siteUrl
+    ? { successUrl: `${siteUrl}/assinatura/sucesso`, autoRedirect: true }
+    : undefined;
+
+  const payload = {
+    customer: params.customerId,
+    billingType: "UNDEFINED",
+    cycle: config.cycle,
+    value: config.value,
+    nextDueDate,
+    description: config.description,
+    externalReference: params.tenantId,
+  };
+
+  try {
+    return await asaasFetch<AsaasSubscription>("/subscriptions", {
+      method: "POST",
+      body: JSON.stringify({ ...payload, callback }),
+    });
+  } catch (error) {
+    // A Asaas só aceita callback.successUrl se a conta tiver um site cadastrado
+    // em Minha Conta → Informações. Sem isso ela recusa a assinatura inteira;
+    // nesse caso criamos a assinatura sem o redirecionamento automático.
+    const noDomain =
+      callback &&
+      error instanceof AsaasError &&
+      /dom[ií]nio|site/i.test(error.message);
+
+    if (!noDomain) throw error;
+
+    return asaasFetch<AsaasSubscription>("/subscriptions", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
 }
 
 export async function getSubscription(subscriptionId: string): Promise<AsaasSubscription> {
@@ -129,6 +154,22 @@ export async function getSubscriptionCheckoutUrl(subscriptionId: string): Promis
   }
 
   return invoiceUrl;
+}
+
+interface AsaasLatestPayment {
+  status: string;
+  invoiceUrl: string;
+  dueDate: string;
+}
+
+// Usado pela reconciliação diária (cron) para confirmar se um pagamento
+// realmente segue em aberto antes de bloquear o acesso do tenant.
+export async function getLatestPayment(subscriptionId: string): Promise<AsaasLatestPayment | null> {
+  const payments = await asaasFetch<{ data: AsaasLatestPayment[] }>(
+    `/payments?subscription=${subscriptionId}&limit=1&order=desc&sort=dueDate`
+  );
+
+  return payments.data?.[0] || null;
 }
 
 export { AsaasError };

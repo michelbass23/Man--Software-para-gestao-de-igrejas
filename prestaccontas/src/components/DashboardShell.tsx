@@ -5,6 +5,8 @@ import Sidebar from "@/components/Sidebar";
 import MobileHeader from "@/components/MobileHeader";
 import AlertToast from "@/components/AlertToast";
 import DemoUpgradePrompt from "@/components/DemoUpgradePrompt";
+import OverdueBanner from "@/components/OverdueBanner";
+import TrialGate from "@/components/TrialGate";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -14,13 +16,15 @@ interface DashboardShellProps {
   userRole: string;
   tenantPlan?: string;
   isDemo?: boolean;
+  subscriptionOverdueSince?: string | null;
+  trialEndsAt?: string | null;
+  trialExpired?: boolean;
 }
 
 const PLAN_LABELS: Record<string, string> = {
-  monthly: "Mensal",
-  annual: "Anual",
-  pro: "Pro",
   free: "Gratuito",
+  pro: "Pro",
+  enterprise: "Enterprise",
 };
 
 export default function DashboardShell({
@@ -29,8 +33,11 @@ export default function DashboardShell({
   tenantLogoUrl,
   userName,
   userRole,
-  tenantPlan = "monthly",
+  tenantPlan = "free",
   isDemo = false,
+  subscriptionOverdueSince = null,
+  trialEndsAt = null,
+  trialExpired = false,
 }: DashboardShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -61,6 +68,8 @@ export default function DashboardShell({
           tenantName={tenantName}
         />
 
+        <OverdueBanner overdueSince={subscriptionOverdueSince} />
+
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden">
           {children}
         </main>
@@ -68,6 +77,10 @@ export default function DashboardShell({
 
       <AlertToast />
       <DemoUpgradePrompt isDemo={isDemo} />
+
+      {!isDemo && trialEndsAt && (
+        <TrialGate trialEndsAt={trialEndsAt} expired={trialExpired} />
+      )}
     </div>
   );
 }
