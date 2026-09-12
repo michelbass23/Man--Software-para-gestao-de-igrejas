@@ -125,11 +125,6 @@ export async function inviteUser(prevState: string | null, formData: FormData) {
 
   const tempPassword = generatePassword();
 
-  console.log("=== CRIANDO CONVITE ===");
-  console.log("Email:", email);
-  console.log("Senha gerada:", tempPassword);
-  console.log("Tamanho da senha:", tempPassword.length);
-
   // Verificar se o email já existe
   const { data: existingUsers } = await admin.auth.admin.listUsers();
   const userExists = existingUsers?.users?.some(

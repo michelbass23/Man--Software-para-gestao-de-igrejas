@@ -22,8 +22,8 @@ function CustomTooltip({
 
   return (
     <div className="glass-card px-4 py-3 border border-border-light">
-      <p className="text-zinc-300 text-xs mb-1">{payload[0].name}</p>
-      <p className="text-zinc-100 font-mono text-sm font-semibold">
+      <p className="text-strong text-xs mb-1">{payload[0].name}</p>
+      <p className="text-strong font-mono text-sm font-semibold">
         {formatCurrency(payload[0].value)}
       </p>
     </div>
@@ -41,7 +41,7 @@ export default function DonutChart({
 
   return (
     <div className="glass-card p-6">
-      <h3 className="text-zinc-400 text-sm font-medium mb-4">{title}</h3>
+      <h3 className="text-muted text-sm font-medium mb-4">{title}</h3>
       <div className="relative" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -72,17 +72,17 @@ export default function DonutChart({
         {/* Center label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           {centerLabel && (
-            <span className="text-zinc-500 text-xs mb-1">{centerLabel}</span>
+            <span className="text-subtle text-xs mb-1">{centerLabel}</span>
           )}
           {centerValue !== undefined && (
-            <span className="text-zinc-100 font-mono text-lg font-semibold">
+            <span className="text-strong font-mono text-lg font-semibold">
               {formatCurrency(centerValue)}
             </span>
           )}
           {!centerLabel && !centerValue && (
             <>
-              <span className="text-zinc-500 text-xs mb-1">Total</span>
-              <span className="text-zinc-100 font-mono text-lg font-semibold">
+              <span className="text-subtle text-xs mb-1">Total</span>
+              <span className="text-strong font-mono text-lg font-semibold">
                 {formatCurrency(total)}
               </span>
             </>
@@ -98,9 +98,9 @@ export default function DonutChart({
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-zinc-400 text-xs">{item.name}</span>
+              <span className="text-muted text-xs">{item.name}</span>
             </div>
-            <span className="text-zinc-300 font-mono text-xs">
+            <span className="text-strong font-mono text-xs">
               {formatCurrency(item.value)}
             </span>
           </div>

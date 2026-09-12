@@ -172,10 +172,10 @@ export default function MemberModal({
               <UserPlus className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-zinc-100 font-semibold">
+              <h2 className="text-strong font-semibold">
                 {isEditing ? "Editar Membro" : "Novo Membro"}
               </h2>
-              <p className="text-zinc-500 text-xs">
+              <p className="text-subtle text-xs">
                 {isEditing
                   ? "Altere os dados do membro"
                   : "Preencha os dados do membro"}
@@ -184,7 +184,7 @@ export default function MemberModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-hover transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -193,7 +193,7 @@ export default function MemberModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Foto */}
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-border flex items-center justify-center overflow-hidden bg-zinc-900/50 flex-shrink-0">
+            <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-border flex items-center justify-center overflow-hidden bg-surface flex-shrink-0">
               {photoUrl ? (
                 <Image
                   src={photoUrl}
@@ -203,7 +203,7 @@ export default function MemberModal({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User className="w-8 h-8 text-zinc-600" />
+                <User className="w-8 h-8 text-faint" />
               )}
             </div>
             <div className="flex gap-2">
@@ -211,7 +211,7 @@ export default function MemberModal({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingPhoto}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-zinc-400 text-sm hover:text-zinc-200 hover:border-border-light transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-muted text-sm hover:text-strong hover:border-border-light transition-colors disabled:opacity-50"
               >
                 <Upload className="w-4 h-4" />
                 {isUploadingPhoto ? "Enviando..." : "Foto"}
@@ -220,7 +220,7 @@ export default function MemberModal({
                 <button
                   type="button"
                   onClick={handleRemovePhoto}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-zinc-500 text-sm hover:text-ruby hover:border-ruby/30 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-subtle text-sm hover:text-ruby hover:border-ruby/30 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -237,7 +237,7 @@ export default function MemberModal({
 
           {/* Nome */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Nome completo *
             </label>
             <input
@@ -253,7 +253,7 @@ export default function MemberModal({
           {/* Telefone e Email */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Telefone
               </label>
               <input
@@ -265,7 +265,7 @@ export default function MemberModal({
               />
             </div>
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 E-mail
               </label>
               <input
@@ -280,7 +280,7 @@ export default function MemberModal({
           {/* Datas */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Data de nascimento
               </label>
               <input
@@ -290,7 +290,7 @@ export default function MemberModal({
               />
             </div>
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Data de batismo
               </label>
               <input
@@ -304,7 +304,7 @@ export default function MemberModal({
           {/* Estado civil e Ministério */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Estado civil
               </label>
               <select
@@ -320,7 +320,7 @@ export default function MemberModal({
               </select>
             </div>
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Ministério
               </label>
               <select
@@ -339,7 +339,7 @@ export default function MemberModal({
 
           {/* Situação */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Situação
             </label>
             <div className="flex gap-2">
@@ -354,9 +354,9 @@ export default function MemberModal({
                       ? s === "ativo"
                         ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                         : s === "inativo"
-                        ? "bg-zinc-500/10 border-zinc-500/30 text-zinc-400"
+                        ? "bg-zinc-500/10 border-zinc-500/30 text-muted"
                         : "bg-blue-500/10 border-blue-500/30 text-blue-400"
-                      : "border-border text-zinc-500 hover:text-zinc-300 hover:border-border-light"
+                      : "border-border text-subtle hover:text-strong hover:border-border-light"
                   )}
                 >
                   {MEMBER_STATUS_LABELS[s]}
@@ -367,7 +367,7 @@ export default function MemberModal({
 
           {/* Observações */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Observações
             </label>
             <textarea
@@ -390,7 +390,7 @@ export default function MemberModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-zinc-400 text-sm font-medium hover:text-zinc-200 hover:border-border-light transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-muted text-sm font-medium hover:text-strong hover:border-border-light transition-colors"
             >
               Cancelar
             </button>

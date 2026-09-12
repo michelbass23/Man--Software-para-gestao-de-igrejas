@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { logAudit, diffFields } from "@/lib/audit";
+import { requireEditor } from "@/lib/authz";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -85,6 +86,40 @@ export async function getEntries(filters?: {
   return { entries: data || [], total: count || 0 };
 }
 
+export async function exportEntries(filters?: {
+  search?: string;
+  category?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  let query = supabase
+    .from("entries")
+    .select("date, category, amount, description, person_name, created_at")
+    .eq("tenant_id", tenantId)
+    .order("date", { ascending: false });
+
+  if (filters?.search) {
+    query = query.or(
+      `description.ilike.%${filters.search}%,person_name.ilike.%${filters.search}%`
+    );
+  }
+  if (filters?.category) query = query.eq("category", filters.category);
+  if (filters?.startDate) query = query.gte("date", filters.startDate);
+  if (filters?.endDate) query = query.lte("date", filters.endDate);
+
+  const { data, error } = await query.limit(10000);
+
+  if (error) {
+    console.error("Erro ao exportar entradas:", error);
+    return { rows: [], error: "Erro ao exportar" };
+  }
+
+  return { rows: data || [], error: null };
+}
+
 export async function createEntry(data: {
   date: string;
   category: string;
@@ -93,6 +128,12 @@ export async function createEntry(data: {
   personName?: string;
   receiptUrl?: string;
 }) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
   const {
@@ -142,6 +183,12 @@ export async function updateEntry(
     receiptUrl?: string;
   }
 ) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
@@ -197,6 +244,12 @@ export async function updateEntry(
 }
 
 export async function deleteEntry(id: string) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 

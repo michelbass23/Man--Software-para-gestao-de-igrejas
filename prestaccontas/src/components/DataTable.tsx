@@ -51,7 +51,7 @@ export default function DataTable<T extends { id: string }>({
                 <th
                   key={col.key}
                   className={cn(
-                    "text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-4",
+                    "text-left text-xs font-medium text-subtle uppercase tracking-wider px-6 py-4",
                     col.className
                   )}
                 >
@@ -79,11 +79,11 @@ export default function DataTable<T extends { id: string }>({
                 >
                   <div className="flex flex-col items-center gap-2">
                     {isEntry ? (
-                      <ArrowDownLeft className="w-8 h-8 text-zinc-600" />
+                      <ArrowDownLeft className="w-8 h-8 text-faint" />
                     ) : (
-                      <ArrowUpRight className="w-8 h-8 text-zinc-600" />
+                      <ArrowUpRight className="w-8 h-8 text-faint" />
                     )}
-                    <p className="text-zinc-500 text-sm">
+                    <p className="text-subtle text-sm">
                       Nenhum lançamento encontrado
                     </p>
                   </div>
@@ -93,7 +93,7 @@ export default function DataTable<T extends { id: string }>({
               data.map((item, index) => (
                 <tr
                   key={item.id}
-                  className="border-b border-border/50 hover:bg-white/[0.02] transition-colors opacity-0 animate-fade-in"
+                  className="border-b border-border/50 hover:bg-hover transition-colors opacity-0 animate-fade-in"
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
                   {columns.map((col) => (
@@ -123,21 +123,21 @@ export default function DataTable<T extends { id: string }>({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 border-t border-border">
-          <p className="text-zinc-500 text-sm">
+          <p className="text-subtle text-sm">
             Página {page} de {totalPages}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1}
-              className="p-2 rounded-lg border border-border text-zinc-400 hover:text-zinc-200 hover:border-border-light disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-lg border border-border text-muted hover:text-strong hover:border-border-light disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => onPageChange(page + 1)}
               disabled={page >= totalPages}
-              className="p-2 rounded-lg border border-border text-zinc-400 hover:text-zinc-200 hover:border-border-light disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-lg border border-border text-muted hover:text-strong hover:border-border-light disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

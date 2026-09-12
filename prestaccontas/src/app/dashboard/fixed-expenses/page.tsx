@@ -214,7 +214,7 @@ export default function FixedExpensesPage() {
     }
 
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-zinc-800/50 text-zinc-400 text-xs font-medium">
+      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-surface-hover text-muted text-xs font-medium">
         <CalendarClock className="w-3 h-3" /> {formatDate(expense.next_due_date)}
       </span>
     );
@@ -225,11 +225,11 @@ export default function FixedExpensesPage() {
       {/* Header - Responsivo */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight flex items-center gap-2 md:gap-3">
+          <h1 className="text-xl md:text-2xl font-semibold text-strong tracking-tight flex items-center gap-2 md:gap-3">
             <CalendarClock className="w-5 h-5 md:w-6 md:h-6 text-gold" />
             Despesas Fixas
           </h1>
-          <p className="text-zinc-500 text-xs md:text-sm mt-1">
+          <p className="text-subtle text-xs md:text-sm mt-1">
             Contas recorrentes com alertas de vencimento
           </p>
         </div>
@@ -245,7 +245,7 @@ export default function FixedExpensesPage() {
       {/* Search - Responsivo */}
       <div className="flex gap-3 mb-6 opacity-0 animate-fade-in stagger-1">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
           <input
             type="text"
             placeholder="Buscar despesas fixas..."
@@ -262,21 +262,21 @@ export default function FixedExpensesPage() {
           Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="glass-card rounded-xl p-4 animate-pulse">
               <div className="flex items-center justify-between mb-3">
-                <div className="h-5 bg-zinc-800 rounded-full w-20" />
-                <div className="h-4 bg-zinc-800 rounded w-16" />
+                <div className="h-5 bg-surface-hover rounded-full w-20" />
+                <div className="h-4 bg-surface-hover rounded w-16" />
               </div>
-              <div className="h-5 bg-zinc-800 rounded w-3/4 mb-2" />
-              <div className="h-7 bg-zinc-800 rounded w-1/2 mb-3" />
-              <div className="h-4 bg-zinc-800 rounded w-full" />
+              <div className="h-5 bg-surface-hover rounded w-3/4 mb-2" />
+              <div className="h-7 bg-surface-hover rounded w-1/2 mb-3" />
+              <div className="h-4 bg-surface-hover rounded w-full" />
             </div>
           ))
         ) : filteredExpenses.length === 0 ? (
           <div className="col-span-full glass-card rounded-xl p-8 md:p-12 text-center">
-            <CalendarClock className="w-10 h-10 md:w-12 md:h-12 text-zinc-600 mx-auto mb-3" />
-            <p className="text-zinc-400 text-sm">
+            <CalendarClock className="w-10 h-10 md:w-12 md:h-12 text-faint mx-auto mb-3" />
+            <p className="text-muted text-sm">
               Nenhuma despesa fixa cadastrada
             </p>
-            <p className="text-zinc-500 text-xs mt-1">
+            <p className="text-subtle text-xs mt-1">
               Cadastre contas como água, luz, aluguel para receber alertas
             </p>
           </div>
@@ -296,7 +296,7 @@ export default function FixedExpensesPage() {
               </div>
 
               {/* Descrição e Valor */}
-              <h3 className="text-zinc-100 font-medium text-sm mb-1 line-clamp-1">
+              <h3 className="text-strong font-medium text-sm mb-1 line-clamp-1">
                 {expense.description || "Sem descrição"}
               </h3>
               <p className="text-ruby font-mono text-xl font-semibold mb-3">
@@ -306,13 +306,13 @@ export default function FixedExpensesPage() {
               {/* Info */}
               <div className="space-y-1.5 mb-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-zinc-500 text-xs">Vencimento</p>
-                  <p className="text-zinc-300 text-xs font-medium">
+                  <p className="text-subtle text-xs">Vencimento</p>
+                  <p className="text-strong text-xs font-medium">
                     Dia {expense.due_day || "—"}
                   </p>
                 </div>
                 {expense.person_name && (
-                  <p className="text-zinc-500 text-xs">
+                  <p className="text-subtle text-xs">
                     Responsável: {expense.person_name}
                   </p>
                 )}
@@ -333,7 +333,7 @@ export default function FixedExpensesPage() {
               <div className="flex items-center gap-1 pt-2 border-t border-border">
                 <button
                   onClick={() => handleMarkAsPaid(expense.id)}
-                  className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-emerald hover:bg-emerald-dim transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-emerald hover:bg-emerald-dim transition-colors"
                   title="Marcar como pago"
                 >
                   <Check className="w-3.5 h-3.5" />
@@ -341,7 +341,7 @@ export default function FixedExpensesPage() {
                 </button>
                 <button
                   onClick={() => handleEdit(expense)}
-                  className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
                   title="Editar"
                 >
                   <Pencil className="w-3.5 h-3.5" />
@@ -349,7 +349,7 @@ export default function FixedExpensesPage() {
                 </button>
                 <button
                   onClick={() => handleDelete(expense.id)}
-                  className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-ruby hover:bg-ruby-dim transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-ruby hover:bg-ruby-dim transition-colors"
                   title="Excluir"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

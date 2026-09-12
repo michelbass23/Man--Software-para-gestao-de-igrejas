@@ -32,7 +32,7 @@ export default function DemoUpgradePrompt({ isDemo }: { isDemo: boolean }) {
       <div className="glass-card max-w-md w-full p-6 md:p-8 rounded-2xl border-gold/30 relative">
         <button
           onClick={() => setShow(false)}
-          className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition-colors"
+          className="absolute top-4 right-4 text-subtle hover:text-strong transition-colors"
           aria-label="Fechar"
         >
           <X className="w-5 h-5" />
@@ -42,10 +42,10 @@ export default function DemoUpgradePrompt({ isDemo }: { isDemo: boolean }) {
           <Sparkles className="w-6 h-6 text-gold" />
         </div>
 
-        <h2 className="text-xl font-semibold text-zinc-100 mb-2">
+        <h2 className="text-xl font-semibold text-strong mb-2">
           Gostou do que viu?
         </h2>
-        <p className="text-zinc-400 text-sm mb-6">
+        <p className="text-muted text-sm mb-6">
           Isso é só uma demonstração com dados fictícios. Crie sua conta agora
           e comece a organizar as finanças da sua igreja de verdade.
         </p>
@@ -62,7 +62,7 @@ export default function DemoUpgradePrompt({ isDemo }: { isDemo: boolean }) {
           <button
             onClick={() => setShow(false)}
             disabled={isExiting}
-            className="flex-1 px-4 py-3 rounded-xl border border-border text-zinc-400 text-sm font-medium hover:bg-white/[0.05] transition-all disabled:opacity-50"
+            className="flex-1 px-4 py-3 rounded-xl border border-border text-muted text-sm font-medium hover:bg-hover transition-all disabled:opacity-50"
           >
             Continuar explorando
           </button>

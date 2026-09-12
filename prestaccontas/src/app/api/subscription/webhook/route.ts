@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
     const webhookToken = process.env.ASAAS_WEBHOOK_TOKEN;
     const receivedToken = request.headers.get("asaas-access-token");
 
-    if (webhookToken && receivedToken !== webhookToken) {
+    // Falha fechado: sem token configurado, o webhook não aceita nenhuma
+    // requisição (antes, a ausência da env var liberava tudo sem checagem).
+    if (!webhookToken || receivedToken !== webhookToken) {
       await logWebhookEvent({ status: "error", errorMessage: "Token inválido" });
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }

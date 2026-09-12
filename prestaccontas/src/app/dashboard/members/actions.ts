@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { logAudit, diffFields } from "@/lib/audit";
+import { requireEditor } from "@/lib/authz";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -102,6 +103,12 @@ export async function createMember(data: {
   notes?: string;
   photoUrl?: string;
 }) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
   const {
@@ -148,6 +155,12 @@ export async function updateMember(
     photoUrl?: string;
   }
 ) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
@@ -210,6 +223,12 @@ export async function updateMember(
 }
 
 export async function deleteMember(id: string) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 

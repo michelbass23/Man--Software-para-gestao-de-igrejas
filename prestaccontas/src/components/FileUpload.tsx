@@ -102,7 +102,7 @@ export default function FileUpload({
 
   return (
     <div className="space-y-2">
-      <label className="block text-zinc-400 text-sm mb-2">
+      <label className="block text-muted text-sm mb-2">
         Comprovante (opcional)
       </label>
 
@@ -128,19 +128,19 @@ export default function FileUpload({
               </div>
             </div>
           ) : isPdf ? (
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-white/[0.02]">
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-hover">
               <File className="w-8 h-8 text-gold" />
               <div className="flex-1 min-w-0">
-                <p className="text-zinc-300 text-sm truncate">
+                <p className="text-strong text-sm truncate">
                   {preview.split("/").pop()?.split("?")[0]}
                 </p>
-                <p className="text-zinc-500 text-xs">PDF</p>
+                <p className="text-subtle text-xs">PDF</p>
               </div>
               <button
                 type="button"
                 onClick={handleRemove}
                 disabled={disabled}
-                className="p-1.5 rounded-lg text-zinc-500 hover:text-ruby hover:bg-ruby-dim transition-colors"
+                className="p-1.5 rounded-lg text-subtle hover:text-ruby hover:bg-ruby-dim transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -159,15 +159,15 @@ export default function FileUpload({
           {isUploading ? (
             <>
               <Loader2 className="w-6 h-6 text-gold animate-spin" />
-              <p className="text-zinc-500 text-sm">Enviando...</p>
+              <p className="text-subtle text-sm">Enviando...</p>
             </>
           ) : (
             <>
-              <Upload className="w-6 h-6 text-zinc-500" />
-              <p className="text-zinc-500 text-sm">
+              <Upload className="w-6 h-6 text-subtle" />
+              <p className="text-subtle text-sm">
                 Clique para selecionar arquivo
               </p>
-              <p className="text-zinc-600 text-xs">
+              <p className="text-faint text-xs">
                 JPG, PNG, WEBP, GIF ou PDF (max 5MB)
               </p>
             </>

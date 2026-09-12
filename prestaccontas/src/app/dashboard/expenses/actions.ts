@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { logAudit, diffFields } from "@/lib/audit";
+import { requireEditor } from "@/lib/authz";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -77,6 +78,42 @@ export async function getExpenses(filters?: {
   return { expenses: data || [], total: count || 0 };
 }
 
+export async function exportExpenses(filters?: {
+  search?: string;
+  category?: string;
+  startDate?: string;
+  endDate?: string;
+  includeFixed?: boolean;
+}) {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  let query = supabase
+    .from("expenses")
+    .select("date, category, amount, description, person_name, status, is_fixed, due_day, next_due_date, created_at")
+    .eq("tenant_id", tenantId)
+    .order("date", { ascending: false });
+
+  if (!filters?.includeFixed) query = query.eq("is_fixed", false);
+  if (filters?.search) {
+    query = query.or(
+      `description.ilike.%${filters.search}%,person_name.ilike.%${filters.search}%`
+    );
+  }
+  if (filters?.category) query = query.eq("category", filters.category);
+  if (filters?.startDate) query = query.gte("date", filters.startDate);
+  if (filters?.endDate) query = query.lte("date", filters.endDate);
+
+  const { data, error } = await query.limit(10000);
+
+  if (error) {
+    console.error("Erro ao exportar despesas:", error);
+    return { rows: [], error: "Erro ao exportar" };
+  }
+
+  return { rows: data || [], error: null };
+}
+
 export async function getFixedExpenses() {
   const supabase = await createClient();
   const tenantId = await getTenantId();
@@ -107,6 +144,12 @@ export async function createExpense(data: {
   dueDay?: number;
   nextDueDate?: string;
 }) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
   const {
@@ -162,6 +205,12 @@ export async function updateExpense(
     status?: string;
   }
 ) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
@@ -226,6 +275,12 @@ export async function updateExpense(
 }
 
 export async function markExpenseAsPaid(id: string) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
@@ -275,6 +330,12 @@ export async function markExpenseAsPaid(id: string) {
 }
 
 export async function deleteExpense(id: string) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 

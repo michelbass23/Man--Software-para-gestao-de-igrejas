@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Search, ArrowDownLeft, Filter, Pencil, Trash2, Receipt } from "lucide-react";
+import { Plus, Search, ArrowDownLeft, Filter, Pencil, Trash2, Receipt, Download } from "lucide-react";
 import EntryModal from "@/components/EntryModal";
 import ReceiptViewer from "@/components/ReceiptViewer";
 import ReceiptThumbnail from "@/components/ReceiptThumbnail";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { ENTRY_CATEGORY_LABELS, type EntryCategory } from "@/types/database";
-import { getEntries, createEntry, updateEntry, deleteEntry, getCurrentTenantId } from "./actions";
+import { getEntries, createEntry, updateEntry, deleteEntry, getCurrentTenantId, exportEntries } from "./actions";
 import { confirmDelete, showError, showToast } from "@/lib/alerts";
+import { toCSV, downloadCSV, csvNumber, csvDate, fileDateSuffix } from "@/lib/csv";
 
 interface Entry {
   id: string;
@@ -32,6 +33,7 @@ export default function EntriesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const ITEMS_PER_PAGE = 12;
 
@@ -63,6 +65,40 @@ export default function EntriesPage() {
     setEditingEntry(null);
     setSaveError(null);
     setIsModalOpen(true);
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const { rows, error } = await exportEntries({
+        search: searchQuery || undefined,
+        category: categoryFilter || undefined,
+      });
+      if (error) {
+        showError("Erro ao exportar", error);
+        return;
+      }
+      if (rows.length === 0) {
+        showToast("Nada para exportar", "info");
+        return;
+      }
+      const csv = toCSV(rows, [
+        { key: "date", label: "Data", format: (r) => csvDate(r.date) },
+        {
+          key: "category",
+          label: "Categoria",
+          format: (r) =>
+            ENTRY_CATEGORY_LABELS[r.category as EntryCategory] || r.category,
+        },
+        { key: "description", label: "Descrição" },
+        { key: "person_name", label: "Pessoa" },
+        { key: "amount", label: "Valor (R$)", format: (r) => csvNumber(r.amount) },
+      ]);
+      downloadCSV(`entradas-${fileDateSuffix()}.csv`, csv);
+      showToast(`${rows.length} entrada(s) exportada(s)`);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleEdit = (entry: Entry) => {
@@ -123,7 +159,7 @@ export default function EntriesPage() {
       doacao: "bg-blue-500/10 text-blue-400",
       campanha: "bg-violet-500/10 text-violet-400",
       evento: "bg-orange-500/10 text-orange-400",
-      outros_entradas: "bg-zinc-500/10 text-zinc-400",
+      outros_entradas: "bg-zinc-500/10 text-muted",
     };
     return colors[category] || colors.outros_entradas;
   };
@@ -133,21 +169,31 @@ export default function EntriesPage() {
       {/* Header - Responsivo */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight flex items-center gap-2 md:gap-3">
+          <h1 className="text-xl md:text-2xl font-semibold text-strong tracking-tight flex items-center gap-2 md:gap-3">
             <ArrowDownLeft className="w-5 h-5 md:w-6 md:h-6 text-gold" />
             Entradas
           </h1>
-          <p className="text-zinc-500 text-xs md:text-sm mt-1">
+          <p className="text-subtle text-xs md:text-sm mt-1">
             Dízimos, ofertas e doações
           </p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gold text-black text-sm font-medium hover:bg-gold/90 transition-colors w-full sm:w-auto"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Entrada
-        </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border text-muted text-sm font-medium hover:text-strong hover:border-border-light transition-colors disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            {isExporting ? "Exportando..." : "Exportar"}
+          </button>
+          <button
+            onClick={handleCreate}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gold text-black text-sm font-medium hover:bg-gold/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nova Entrada
+          </button>
+        </div>
       </div>
 
       {/* Error toast */}
@@ -161,14 +207,14 @@ export default function EntriesPage() {
       <div className="glass-card p-3 md:p-4 mb-6 opacity-0 animate-fade-in stagger-1">
         <div className="flex items-center gap-4 md:gap-6">
           <div>
-            <p className="text-zinc-500 text-[10px] md:text-xs">Total de Registros</p>
-            <p className="text-zinc-200 font-mono text-base md:text-lg font-semibold">
+            <p className="text-subtle text-[10px] md:text-xs">Total de Registros</p>
+            <p className="text-strong font-mono text-base md:text-lg font-semibold">
               {total}
             </p>
           </div>
           <div className="w-px h-8 bg-border" />
           <div>
-            <p className="text-zinc-500 text-[10px] md:text-xs">Valor Total</p>
+            <p className="text-subtle text-[10px] md:text-xs">Valor Total</p>
             <p className="text-gold font-mono text-base md:text-lg font-semibold">
               {formatCurrency(totalAmount)}
             </p>
@@ -179,7 +225,7 @@ export default function EntriesPage() {
       {/* Filters - Responsivo */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6 opacity-0 animate-fade-in stagger-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
           <input
             type="text"
             placeholder="Buscar por nome ou descrição..."
@@ -192,7 +238,7 @@ export default function EntriesPage() {
           />
         </div>
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle pointer-events-none" />
           <select
             value={categoryFilter}
             onChange={(e) => {
@@ -221,18 +267,18 @@ export default function EntriesPage() {
                 className="glass-card rounded-xl p-4 animate-pulse"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="h-4 bg-zinc-800 rounded w-1/3" />
-                  <div className="h-6 bg-zinc-800 rounded-full w-20" />
+                  <div className="h-4 bg-surface-hover rounded w-1/3" />
+                  <div className="h-6 bg-surface-hover rounded-full w-20" />
                 </div>
-                <div className="h-6 bg-zinc-800 rounded w-1/2 mb-2" />
-                <div className="h-3 bg-zinc-800 rounded w-2/3" />
+                <div className="h-6 bg-surface-hover rounded w-1/2 mb-2" />
+                <div className="h-3 bg-surface-hover rounded w-2/3" />
               </div>
             ))}
           </div>
         ) : entries.length === 0 ? (
           <div className="glass-card rounded-xl p-8 md:p-12 text-center">
-            <ArrowDownLeft className="w-10 h-10 md:w-12 md:h-12 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400 text-sm">
+            <ArrowDownLeft className="w-10 h-10 md:w-12 md:h-12 text-faint mx-auto mb-4" />
+            <p className="text-muted text-sm">
               {searchQuery || categoryFilter
                 ? "Nenhuma entrada encontrada com os filtros selecionados"
                 : "Nenhuma entrada registrada"}
@@ -257,7 +303,7 @@ export default function EntriesPage() {
                   {/* Header */}
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-400 text-xs font-mono">
+                      <span className="text-muted text-xs font-mono">
                         {formatDate(entry.date)}
                       </span>
                     </div>
@@ -278,12 +324,12 @@ export default function EntriesPage() {
                   {/* Info */}
                   <div className="space-y-1.5 mb-3">
                     {entry.person_name && (
-                      <p className="text-zinc-300 text-sm">
+                      <p className="text-strong text-sm">
                         {entry.person_name}
                       </p>
                     )}
                     {entry.description && (
-                      <p className="text-zinc-500 text-xs line-clamp-2">
+                      <p className="text-subtle text-xs line-clamp-2">
                         {entry.description}
                       </p>
                     )}
@@ -304,7 +350,7 @@ export default function EntriesPage() {
                   <div className="flex items-center gap-1 pt-2 border-t border-border">
                     <button
                       onClick={() => handleEdit(entry)}
-                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-gold hover:bg-gold-dim transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-gold hover:bg-gold-dim transition-colors"
                       title="Editar"
                     >
                       <Pencil className="w-3.5 h-3.5" />
@@ -312,7 +358,7 @@ export default function EntriesPage() {
                     </button>
                     <button
                       onClick={() => handleDelete(entry.id)}
-                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-ruby hover:bg-ruby-dim transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-ruby hover:bg-ruby-dim transition-colors"
                       title="Excluir"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -329,17 +375,17 @@ export default function EntriesPage() {
                 <button
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
-                  className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 rounded-lg text-sm text-muted hover:text-strong hover:bg-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Anterior
                 </button>
-                <span className="text-zinc-500 text-sm">
+                <span className="text-subtle text-sm">
                   Página {page} de {totalPages}
                 </span>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 rounded-lg text-sm text-muted hover:text-strong hover:bg-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Próxima
                 </button>

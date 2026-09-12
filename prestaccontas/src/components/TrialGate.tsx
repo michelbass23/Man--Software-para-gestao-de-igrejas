@@ -56,10 +56,10 @@ export default function TrialGate({ trialEndsAt, expired }: TrialGateProps) {
           <Lock className="h-8 w-8 text-gold" />
         </div>
 
-        <h2 className="mb-2 text-2xl font-bold text-zinc-100">
+        <h2 className="mb-2 text-2xl font-bold text-strong">
           Seu teste grátis terminou
         </h2>
-        <p className="mb-6 text-sm text-zinc-400">
+        <p className="mb-6 text-sm text-muted">
           Assine agora para desbloquear o sistema e continuar de onde parou.
           Seus dados estão salvos e voltam assim que o pagamento for confirmado.
         </p>
@@ -68,7 +68,7 @@ export default function TrialGate({ trialEndsAt, expired }: TrialGateProps) {
           {FEATURES.map((feature) => (
             <li
               key={feature}
-              className="flex items-center gap-2 text-sm text-zinc-300"
+              className="flex items-center gap-2 text-sm text-strong"
             >
               <Sparkles className="h-4 w-4 flex-shrink-0 text-gold" />
               {feature}
@@ -92,7 +92,7 @@ export default function TrialGate({ trialEndsAt, expired }: TrialGateProps) {
         <form action={signOut}>
           <button
             type="submit"
-            className="mt-3 flex w-full items-center justify-center gap-2 py-2 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+            className="mt-3 flex w-full items-center justify-center gap-2 py-2 text-sm text-subtle transition-colors hover:text-strong"
           >
             <LogOut className="h-4 w-4" />
             Sair da conta

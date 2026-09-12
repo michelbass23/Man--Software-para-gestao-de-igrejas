@@ -157,7 +157,7 @@ export default function EventsPage() {
       case "concluido":
         return "bg-blue-500/10 text-blue-400 border-blue-500/20";
       default:
-        return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+        return "bg-zinc-500/10 text-muted border-zinc-500/20";
     }
   };
 
@@ -173,7 +173,7 @@ export default function EventsPage() {
       ceia: "bg-rose-500/10 text-rose-400",
       culto_jovens: "bg-indigo-500/10 text-indigo-400",
       culto_criancas: "bg-orange-500/10 text-orange-400",
-      outro: "bg-zinc-500/10 text-zinc-400",
+      outro: "bg-zinc-500/10 text-muted",
     };
     return colors[type] || colors.outro;
   };
@@ -196,11 +196,11 @@ export default function EventsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight flex items-center gap-2 md:gap-3">
+          <h1 className="text-xl md:text-2xl font-semibold text-strong tracking-tight flex items-center gap-2 md:gap-3">
             <CalendarDays className="w-5 h-5 md:w-6 md:h-6 text-violet-400" />
             Agenda de Eventos
           </h1>
-          <p className="text-zinc-500 text-xs md:text-sm mt-1">
+          <p className="text-subtle text-xs md:text-sm mt-1">
             Gerencie os eventos da igreja
           </p>
         </div>
@@ -224,21 +224,21 @@ export default function EventsPage() {
       <div className="glass-card p-4 mb-6 opacity-0 animate-fade-in stagger-1">
         <div className="flex items-center gap-6">
           <div>
-            <p className="text-zinc-500 text-xs">Total</p>
-            <p className="text-zinc-200 font-mono text-lg font-semibold">
+            <p className="text-subtle text-xs">Total</p>
+            <p className="text-strong font-mono text-lg font-semibold">
               {total}
             </p>
           </div>
           <div className="w-px h-8 bg-border" />
           <div>
-            <p className="text-zinc-500 text-xs">Próximos</p>
+            <p className="text-subtle text-xs">Próximos</p>
             <p className="text-violet-400 font-mono text-lg font-semibold">
               {upcomingEvents.length}
             </p>
           </div>
           <div className="w-px h-8 bg-border" />
           <div>
-            <p className="text-zinc-500 text-xs">Este mês</p>
+            <p className="text-subtle text-xs">Este mês</p>
             <p className="text-emerald-400 font-mono text-lg font-semibold">
               {thisMonthEvents.length}
             </p>
@@ -249,7 +249,7 @@ export default function EventsPage() {
       {/* Filters - Responsivo */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6 opacity-0 animate-fade-in stagger-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
           <input
             type="text"
             placeholder="Buscar por nome, local ou responsável..."
@@ -304,19 +304,19 @@ export default function EventsPage() {
                 key={i}
                 className="glass-card rounded-xl overflow-hidden animate-pulse"
               >
-                <div className="h-32 bg-zinc-800" />
+                <div className="h-32 bg-surface-hover" />
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-zinc-800 rounded w-3/4" />
-                  <div className="h-3 bg-zinc-800 rounded w-1/2" />
-                  <div className="h-3 bg-zinc-800 rounded w-2/3" />
+                  <div className="h-4 bg-surface-hover rounded w-3/4" />
+                  <div className="h-3 bg-surface-hover rounded w-1/2" />
+                  <div className="h-3 bg-surface-hover rounded w-2/3" />
                 </div>
               </div>
             ))}
           </div>
         ) : events.length === 0 ? (
           <div className="glass-card rounded-xl p-12 text-center">
-            <CalendarDays className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400 text-sm">
+            <CalendarDays className="w-12 h-12 text-faint mx-auto mb-4" />
+            <p className="text-muted text-sm">
               {searchQuery || typeFilter || statusFilter
                 ? "Nenhum evento encontrado com os filtros selecionados"
                 : "Nenhum evento cadastrado"}
@@ -339,7 +339,7 @@ export default function EventsPage() {
                   className="glass-card rounded-xl overflow-hidden group hover:border-violet-500/30 transition-colors"
                 >
                   {/* Banner */}
-                  <div className="relative h-32 bg-zinc-900">
+                  <div className="relative h-32 bg-surface">
                     {event.banner_url ? (
                       <Image
                         src={event.banner_url}
@@ -349,7 +349,7 @@ export default function EventsPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <CalendarDays className="w-10 h-10 text-zinc-700" />
+                        <CalendarDays className="w-10 h-10 text-faint" />
                       </div>
                     )}
                     {/* Date badge */}
@@ -357,7 +357,7 @@ export default function EventsPage() {
                       <p className="text-white text-xs font-bold leading-none">
                         {formatDate(event.event_date).split(" ")[0]}
                       </p>
-                      <p className="text-zinc-300 text-[10px] leading-none mt-0.5">
+                      <p className="text-white/70 text-[10px] leading-none mt-0.5">
                         {formatDate(event.event_date).split(" ")[1]}
                       </p>
                     </div>
@@ -374,7 +374,7 @@ export default function EventsPage() {
                   {/* Content */}
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="text-zinc-100 font-semibold text-sm line-clamp-1">
+                      <h3 className="text-strong font-semibold text-sm line-clamp-1">
                         {event.title}
                       </h3>
                       <span
@@ -387,14 +387,14 @@ export default function EventsPage() {
                     </div>
 
                     {event.description && (
-                      <p className="text-zinc-500 text-xs line-clamp-2 mb-3">
+                      <p className="text-subtle text-xs line-clamp-2 mb-3">
                         {event.description}
                       </p>
                     )}
 
                     <div className="space-y-1.5 mb-3">
                       {event.event_time && (
-                        <div className="flex items-center gap-2 text-zinc-400">
+                        <div className="flex items-center gap-2 text-muted">
                           <Clock className="w-3 h-3" />
                           <span className="text-xs">
                             {formatTime(event.event_time)}
@@ -402,7 +402,7 @@ export default function EventsPage() {
                         </div>
                       )}
                       {event.location && (
-                        <div className="flex items-center gap-2 text-zinc-400">
+                        <div className="flex items-center gap-2 text-muted">
                           <MapPin className="w-3 h-3" />
                           <span className="text-xs truncate">
                             {event.location}
@@ -410,7 +410,7 @@ export default function EventsPage() {
                         </div>
                       )}
                       {event.responsible_name && (
-                        <div className="flex items-center gap-2 text-zinc-400">
+                        <div className="flex items-center gap-2 text-muted">
                           <User className="w-3 h-3" />
                           <span className="text-xs truncate">
                             {event.responsible_name}
@@ -451,7 +451,7 @@ export default function EventsPage() {
                       </Link>
                       <button
                         onClick={() => handleEdit(event)}
-                        className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
                         title="Editar"
                       >
                         <Pencil className="w-3.5 h-3.5" />
@@ -459,7 +459,7 @@ export default function EventsPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(event.id)}
-                        className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-zinc-500 hover:text-ruby hover:bg-ruby-dim transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1.5 p-2 rounded-lg text-subtle hover:text-ruby hover:bg-ruby-dim transition-colors"
                         title="Excluir"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -477,17 +477,17 @@ export default function EventsPage() {
                 <button
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
-                  className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 rounded-lg text-sm text-muted hover:text-strong hover:bg-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Anterior
                 </button>
-                <span className="text-zinc-500 text-sm">
+                <span className="text-subtle text-sm">
                   Página {page} de {totalPages}
                 </span>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 rounded-lg text-sm text-muted hover:text-strong hover:bg-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Próxima
                 </button>

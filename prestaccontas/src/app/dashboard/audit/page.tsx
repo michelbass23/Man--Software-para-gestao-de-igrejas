@@ -145,11 +145,11 @@ export default function AuditPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight flex items-center gap-2 md:gap-3">
+          <h1 className="text-xl md:text-2xl font-semibold text-strong tracking-tight flex items-center gap-2 md:gap-3">
             <History className="w-5 h-5 md:w-6 md:h-6 text-gold" />
             Auditoria
           </h1>
-          <p className="text-zinc-500 text-xs md:text-sm mt-1">
+          <p className="text-subtle text-xs md:text-sm mt-1">
             Histórico de criações, edições e exclusões feitas pela equipe
           </p>
         </div>
@@ -159,7 +159,7 @@ export default function AuditPage() {
       <div className="glass-card p-4 md:p-6 mb-6 opacity-0 animate-fade-in stagger-1">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <label className="block text-zinc-400 text-sm mb-2">Tipo de registro</label>
+            <label className="block text-muted text-sm mb-2">Tipo de registro</label>
             <select
               value={entityFilter}
               onChange={(e) => {
@@ -177,7 +177,7 @@ export default function AuditPage() {
             </select>
           </div>
           <div className="flex-1">
-            <label className="block text-zinc-400 text-sm mb-2">Ação</label>
+            <label className="block text-muted text-sm mb-2">Ação</label>
             <select
               value={actionFilter}
               onChange={(e) => {
@@ -198,9 +198,9 @@ export default function AuditPage() {
       {/* Lista */}
       <div className="glass-card overflow-hidden opacity-0 animate-fade-in stagger-2">
         {isLoading ? (
-          <div className="p-8 text-center text-zinc-500 text-sm">Carregando...</div>
+          <div className="p-8 text-center text-subtle text-sm">Carregando...</div>
         ) : logs.length === 0 ? (
-          <div className="p-8 text-center text-zinc-500 text-sm">
+          <div className="p-8 text-center text-subtle text-sm">
             Nenhum registro de auditoria encontrado
           </div>
         ) : (
@@ -211,24 +211,24 @@ export default function AuditPage() {
               return (
                 <div
                   key={log.id}
-                  className="p-4 flex items-start gap-3 hover:bg-white/[0.02] transition-colors"
+                  className="p-4 flex items-start gap-3 hover:bg-hover transition-colors"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0">
-                    <EntityIcon className="w-4 h-4 text-zinc-400" />
+                  <div className="w-9 h-9 rounded-xl bg-surface-hover flex items-center justify-center flex-shrink-0">
+                    <EntityIcon className="w-4 h-4 text-muted" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-zinc-200">
+                    <p className="text-sm text-strong">
                       <span className="font-medium">{log.user_name || "Usuário"}</span>{" "}
                       <span
                         className={
-                          log.action === "delete" ? "text-ruby" : "text-zinc-400"
+                          log.action === "delete" ? "text-ruby" : "text-muted"
                         }
                       >
                         {(ACTION_LABELS[log.action] || log.action).toLowerCase()}
                       </span>{" "}
                       {ENTITY_LABELS[log.entity_type] || log.entity_type}
                       {log.entity_label && (
-                        <span className="text-zinc-500"> — {log.entity_label}</span>
+                        <span className="text-subtle"> — {log.entity_label}</span>
                       )}
                     </p>
                     {log.action === "update" &&
@@ -240,26 +240,26 @@ export default function AuditPage() {
                               { from: unknown; to: unknown }
                             >
                           ).map(([field, { from, to }]) => (
-                            <p key={field} className="text-xs text-zinc-500">
-                              <span className="text-zinc-400">
+                            <p key={field} className="text-xs text-subtle">
+                              <span className="text-muted">
                                 {FIELD_LABELS[field] || field}:
                               </span>{" "}
                               {formatFieldValue(field, from)}{" "}
-                              <span className="text-zinc-600">→</span>{" "}
-                              <span className="text-zinc-300">
+                              <span className="text-faint">→</span>{" "}
+                              <span className="text-strong">
                                 {formatFieldValue(field, to)}
                               </span>
                             </p>
                           ))}
                         </div>
                       )}
-                    <p className="text-zinc-600 text-xs mt-1">
+                    <p className="text-faint text-xs mt-1">
                       {formatDateTime(log.created_at)}
                     </p>
                   </div>
                   <span
                     className={`flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full ${
-                      ACTION_STYLES[log.action] || "bg-zinc-800 text-zinc-400"
+                      ACTION_STYLES[log.action] || "bg-surface-hover text-muted"
                     }`}
                   >
                     <ActionIcon className="w-3 h-3" />
@@ -278,17 +278,17 @@ export default function AuditPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 rounded-lg border border-border text-zinc-400 text-sm disabled:opacity-40"
+            className="px-3 py-1.5 rounded-lg border border-border text-muted text-sm disabled:opacity-40"
           >
             Anterior
           </button>
-          <span className="text-zinc-500 text-sm">
+          <span className="text-subtle text-sm">
             Página {page} de {totalPages}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 rounded-lg border border-border text-zinc-400 text-sm disabled:opacity-40"
+            className="px-3 py-1.5 rounded-lg border border-border text-muted text-sm disabled:opacity-40"
           >
             Próxima
           </button>

@@ -18,7 +18,7 @@ export default function ReceiptThumbnail({ url, className }: ReceiptThumbnailPro
 
   if (hasError) {
     return (
-      <div className={cn("flex items-center gap-1.5 text-zinc-500", className)}>
+      <div className={cn("flex items-center gap-1.5 text-subtle", className)}>
         <AlertCircle className="w-3.5 h-3.5" />
         <span className="text-xs">Erro</span>
       </div>
@@ -39,8 +39,8 @@ export default function ReceiptThumbnail({ url, className }: ReceiptThumbnailPro
           onError={() => setHasError(true)}
         />
         {!isLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-zinc-800">
-            <Image className="w-4 h-4 text-zinc-600 animate-pulse" />
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-hover">
+            <Image className="w-4 h-4 text-faint animate-pulse" />
           </div>
         )}
       </div>
@@ -57,7 +57,7 @@ export default function ReceiptThumbnail({ url, className }: ReceiptThumbnailPro
   }
 
   return (
-    <div className={cn("flex items-center gap-1.5 text-zinc-500", className)}>
+    <div className={cn("flex items-center gap-1.5 text-subtle", className)}>
       <File className="w-3.5 h-3.5" />
       <span className="text-xs">Arquivo</span>
     </div>

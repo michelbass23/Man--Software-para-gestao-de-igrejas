@@ -163,10 +163,10 @@ export default function EventModal({
               <CalendarDays className="w-5 h-5 text-violet-400" />
             </div>
             <div>
-              <h2 className="text-zinc-100 font-semibold">
+              <h2 className="text-strong font-semibold">
                 {isEditing ? "Editar Evento" : "Novo Evento"}
               </h2>
-              <p className="text-zinc-500 text-xs">
+              <p className="text-subtle text-xs">
                 {isEditing
                   ? "Altere os dados do evento"
                   : "Preencha os dados do evento"}
@@ -175,7 +175,7 @@ export default function EventModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-hover transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -184,11 +184,11 @@ export default function EventModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Banner */}
           <div className="space-y-2">
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Banner do evento
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-32 h-20 rounded-xl border-2 border-dashed border-border flex items-center justify-center overflow-hidden bg-zinc-900/50 flex-shrink-0">
+              <div className="w-32 h-20 rounded-xl border-2 border-dashed border-border flex items-center justify-center overflow-hidden bg-surface flex-shrink-0">
                 {bannerUrl ? (
                   <Image
                     src={bannerUrl}
@@ -198,7 +198,7 @@ export default function EventModal({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <CalendarDays className="w-8 h-8 text-zinc-600" />
+                  <CalendarDays className="w-8 h-8 text-faint" />
                 )}
               </div>
               <div className="flex gap-2">
@@ -206,7 +206,7 @@ export default function EventModal({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploadingBanner}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-zinc-400 text-sm hover:text-zinc-200 hover:border-border-light transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-muted text-sm hover:text-strong hover:border-border-light transition-colors disabled:opacity-50"
                 >
                   <Upload className="w-4 h-4" />
                   {isUploadingBanner ? "Enviando..." : "Banner"}
@@ -215,7 +215,7 @@ export default function EventModal({
                   <button
                     type="button"
                     onClick={handleRemoveBanner}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-zinc-500 text-sm hover:text-ruby hover:border-ruby/30 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-subtle text-sm hover:text-ruby hover:border-ruby/30 transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -233,7 +233,7 @@ export default function EventModal({
 
           {/* Título */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Nome do evento *
             </label>
             <input
@@ -249,7 +249,7 @@ export default function EventModal({
           {/* Tipo e Responsável */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Tipo do evento *
               </label>
               <select
@@ -266,7 +266,7 @@ export default function EventModal({
               </select>
             </div>
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Responsável
               </label>
               <input
@@ -281,7 +281,7 @@ export default function EventModal({
           {/* Data e Horário */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Data do evento *
               </label>
               <input
@@ -292,7 +292,7 @@ export default function EventModal({
               />
             </div>
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Horário
               </label>
               <input
@@ -305,7 +305,7 @@ export default function EventModal({
 
           {/* Local */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Local do evento
             </label>
             <input
@@ -318,7 +318,7 @@ export default function EventModal({
 
           {/* Descrição */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Descrição
             </label>
             <textarea
@@ -331,7 +331,7 @@ export default function EventModal({
 
           {/* Status */}
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Status
             </label>
             <div className="flex gap-2">
@@ -348,7 +348,7 @@ export default function EventModal({
                         : s === "cancelado"
                         ? "bg-ruby-dim border-ruby/30 text-ruby"
                         : "bg-blue-500/10 border-blue-500/30 text-blue-400"
-                      : "border-border text-zinc-500 hover:text-zinc-300 hover:border-border-light"
+                      : "border-border text-subtle hover:text-strong hover:border-border-light"
                   )}
                 >
                   {EVENT_STATUS_LABELS[s]}
@@ -369,7 +369,7 @@ export default function EventModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-zinc-400 text-sm font-medium hover:text-zinc-200 hover:border-border-light transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-muted text-sm font-medium hover:text-strong hover:border-border-light transition-colors"
             >
               Cancelar
             </button>

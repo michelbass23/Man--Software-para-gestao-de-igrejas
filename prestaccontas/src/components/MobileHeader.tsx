@@ -31,7 +31,7 @@ export default function MobileHeader({
     <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-surface/95 backdrop-blur-xl border-b border-border lg:hidden">
       <button
         onClick={onMenuClick}
-        className="p-2 -ml-2 rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors active:scale-95"
+        className="p-2 -ml-2 rounded-xl text-muted hover:text-strong hover:bg-surface-hover transition-colors active:scale-95"
         aria-label="Abrir menu"
       >
         <Menu className="w-6 h-6" />
@@ -41,7 +41,7 @@ export default function MobileHeader({
         <div className="w-7 h-7 rounded-lg bg-gold-dim flex items-center justify-center">
           <Church className="w-4 h-4 text-gold" />
         </div>
-        <h1 className="text-base font-semibold text-zinc-100">{title}</h1>
+        <h1 className="text-base font-semibold text-strong">{title}</h1>
       </div>
 
       {/* Espaçador para centralizar o título */}

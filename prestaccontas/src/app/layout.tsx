@@ -64,6 +64,15 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if(location.pathname.indexOf('/dashboard')!==0)return;" +
+              "var t=localStorage.getItem('prestacontas.theme')||'system';" +
+              "var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);" +
+              "document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){}})();",
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
         {children}

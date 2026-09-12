@@ -31,7 +31,7 @@ export default function RecentTransactions({
 
   return (
     <div className="glass-card p-6">
-      <h3 className="text-zinc-400 text-sm font-medium mb-4">
+      <h3 className="text-muted text-sm font-medium mb-4">
         Últimos Lançamentos
       </h3>
       <div className="space-y-1">
@@ -45,7 +45,7 @@ export default function RecentTransactions({
           return (
             <div
               key={tx.id}
-              className="flex items-center gap-4 py-3 px-3 rounded-xl hover:bg-white/[0.02] transition-colors opacity-0 animate-fade-in"
+              className="flex items-center gap-4 py-3 px-3 rounded-xl hover:bg-hover transition-colors opacity-0 animate-fade-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div
@@ -61,10 +61,10 @@ export default function RecentTransactions({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-zinc-200 truncate">
+                <p className="text-sm text-strong truncate">
                   {tx.description || categoryLabel}
                 </p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-subtle">
                   {categoryLabel} · {formatDate(tx.date)}
                 </p>
               </div>
@@ -82,7 +82,7 @@ export default function RecentTransactions({
 
         {displayTransactions.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-zinc-500 text-sm">Nenhum lançamento encontrado</p>
+            <p className="text-subtle text-sm">Nenhum lançamento encontrado</p>
           </div>
         )}
       </div>

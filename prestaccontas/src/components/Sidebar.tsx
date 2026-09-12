@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/login/actions";
 import AlertsDropdown from "@/components/AlertsDropdown";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
   {
@@ -177,11 +178,11 @@ export default function Sidebar({
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-zinc-100 truncate">
+              <p className="text-sm font-semibold text-strong truncate">
                 {tenantName}
               </p>
               <div className="flex items-center gap-2">
-                <p className="text-xs text-zinc-500 capitalize">{userRole}</p>
+                <p className="text-xs text-subtle capitalize">{userRole}</p>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gold/20 text-gold font-medium">
                   {planLabel}
                 </span>
@@ -192,7 +193,7 @@ export default function Sidebar({
           {/* Botão fechar - apenas mobile */}
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors lg:hidden"
+            className="p-2 rounded-lg text-muted hover:text-strong hover:bg-surface-hover transition-colors lg:hidden"
             aria-label="Fechar menu"
           >
             <X className="w-5 h-5" />
@@ -210,14 +211,14 @@ export default function Sidebar({
                 className={cn(
                   "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-white/[0.08] text-zinc-100"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
+                    ? "bg-active text-strong"
+                    : "text-muted hover:text-strong hover:bg-hover"
                 )}
               >
                 <item.icon
                   className={cn(
                     "w-5 h-5 flex-shrink-0",
-                    isActive ? "text-gold" : "text-zinc-500"
+                    isActive ? "text-gold" : "text-subtle"
                   )}
                 />
                 <span>{item.label}</span>
@@ -228,25 +229,26 @@ export default function Sidebar({
 
         {/* Rodapé com alertas e usuário */}
         <div className="p-3 border-t border-border">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center justify-between gap-2 mb-3">
             <AlertsDropdown />
+            <ThemeToggle variant="inline" />
           </div>
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-zinc-900/50">
-            <div className="w-9 h-9 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium text-zinc-300">
+          <div className="flex items-center gap-3 p-2 rounded-xl bg-hover">
+            <div className="w-9 h-9 rounded-full bg-surface-hover flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-medium text-strong">
                 {userName.charAt(0).toUpperCase()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-zinc-200 truncate">
+              <p className="text-sm font-medium text-strong truncate">
                 {userName}
               </p>
-              <p className="text-xs text-zinc-500 capitalize">{userRole}</p>
+              <p className="text-xs text-subtle capitalize">{userRole}</p>
             </div>
             <form action={signOut}>
               <button
                 type="submit"
-                className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
+                className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-surface-hover transition-colors"
                 title="Sair"
               >
                 <LogOut className="w-4 h-4" />

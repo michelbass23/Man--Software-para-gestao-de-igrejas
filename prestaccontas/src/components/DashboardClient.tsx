@@ -166,8 +166,8 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               <Users className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-400" />
             </div>
             <div>
-              <p className="text-zinc-500 text-[10px] md:text-xs">Membros</p>
-              <p className="text-zinc-100 text-lg md:text-xl font-semibold font-mono">
+              <p className="text-subtle text-[10px] md:text-xs">Membros</p>
+              <p className="text-strong text-lg md:text-xl font-semibold font-mono">
                 {summary.totalMembers}
               </p>
             </div>
@@ -184,10 +184,10 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               <Cake className="w-3.5 h-3.5 md:w-4 md:h-4 text-yellow-400" />
             </div>
             <div>
-              <p className="text-zinc-500 text-[10px] md:text-xs">
+              <p className="text-subtle text-[10px] md:text-xs">
                 Aniversariantes
               </p>
-              <p className="text-zinc-100 text-lg md:text-xl font-semibold font-mono">
+              <p className="text-strong text-lg md:text-xl font-semibold font-mono">
                 {summary.monthBirthdays.length}
               </p>
             </div>
@@ -197,7 +197,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               {summary.monthBirthdays.slice(0, 3).map((member) => (
                 <div
                   key={member.id}
-                  className="w-6 h-6 md:w-7 md:h-7 rounded-full border-2 border-surface overflow-hidden bg-zinc-800"
+                  className="w-6 h-6 md:w-7 md:h-7 rounded-full border-2 border-surface overflow-hidden bg-surface-hover"
                   title={member.name}
                 >
                   {member.photo_url ? (
@@ -209,15 +209,15 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-400">
+                    <div className="w-full h-full flex items-center justify-center text-[10px] text-muted">
                       {member.name.charAt(0)}
                     </div>
                   )}
                 </div>
               ))}
               {summary.monthBirthdays.length > 3 && (
-                <div className="w-6 h-6 md:w-7 md:h-7 rounded-full border-2 border-surface bg-zinc-800 flex items-center justify-center">
-                  <span className="text-[10px] text-zinc-400">
+                <div className="w-6 h-6 md:w-7 md:h-7 rounded-full border-2 border-surface bg-surface-hover flex items-center justify-center">
+                  <span className="text-[10px] text-muted">
                     +{summary.monthBirthdays.length - 3}
                   </span>
                 </div>
@@ -236,15 +236,15 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               <CalendarDays className="w-3.5 h-3.5 md:w-4 md:h-4 text-violet-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-zinc-500 text-[10px] md:text-xs">
+              <p className="text-subtle text-[10px] md:text-xs">
                 Próximo Evento
               </p>
               {summary.nextEvent ? (
                 <>
-                  <p className="text-zinc-100 text-sm font-semibold line-clamp-1">
+                  <p className="text-strong text-sm font-semibold line-clamp-1">
                     {summary.nextEvent.title}
                   </p>
-                  <p className="text-zinc-400 text-[10px] md:text-[11px] flex items-center gap-1">
+                  <p className="text-muted text-[10px] md:text-[11px] flex items-center gap-1">
                     <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" />
                     <span className="truncate">
                       {formatEventDate(summary.nextEvent.event_date)}
@@ -254,7 +254,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
                   </p>
                 </>
               ) : (
-                <p className="text-zinc-500 text-sm">Nenhum evento</p>
+                <p className="text-subtle text-sm">Nenhum evento</p>
               )}
             </div>
           </div>
@@ -270,24 +270,24 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               className={`w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center ${
                 summary.expiringExpenses.length > 0
                   ? "bg-amber-500/10"
-                  : "bg-zinc-800/50"
+                  : "bg-surface-hover"
               }`}
             >
               <AlertTriangle
                 className={`w-3.5 h-3.5 md:w-4 md:h-4 ${
                   summary.expiringExpenses.length > 0
                     ? "text-amber-400"
-                    : "text-zinc-500"
+                    : "text-subtle"
                 }`}
               />
             </div>
             <div>
-              <p className="text-zinc-500 text-[10px] md:text-xs">Vencendo</p>
+              <p className="text-subtle text-[10px] md:text-xs">Vencendo</p>
               <p
                 className={`text-lg md:text-xl font-semibold font-mono ${
                   summary.expiringExpenses.length > 0
                     ? "text-amber-400"
-                    : "text-zinc-100"
+                    : "text-strong"
                 }`}
               >
                 {summary.expiringExpenses.length}
@@ -299,7 +299,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               {summary.expiringExpenses.slice(0, 2).map((expense) => (
                 <p
                   key={expense.id}
-                  className="text-zinc-500 text-[10px] md:text-[11px] line-clamp-1"
+                  className="text-subtle text-[10px] md:text-[11px] line-clamp-1"
                 >
                   {expense.description || "Sem descrição"}
                 </p>

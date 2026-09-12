@@ -61,9 +61,9 @@ const roleConfig = {
     label: "Visualizador",
     shortLabel: "Viewer",
     icon: Eye,
-    color: "text-zinc-400",
-    bg: "bg-zinc-800/50",
-    border: "border-zinc-700/20",
+    color: "text-muted",
+    bg: "bg-surface-hover",
+    border: "border-border",
     description: "Apenas ver",
   },
 };
@@ -197,11 +197,11 @@ export default function TeamPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-zinc-100 tracking-tight flex items-center gap-2 md:gap-3">
+          <h1 className="text-xl md:text-2xl font-semibold text-strong tracking-tight flex items-center gap-2 md:gap-3">
             <Users className="w-5 h-5 md:w-6 md:h-6 text-gold" />
             Equipe
           </h1>
-          <p className="text-zinc-500 text-xs md:text-sm mt-1">
+          <p className="text-subtle text-xs md:text-sm mt-1">
             Gerencie os membros e permissões
           </p>
         </div>
@@ -232,10 +232,10 @@ export default function TeamPage() {
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="glass-card rounded-xl p-4 animate-pulse">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-zinc-800" />
+                  <div className="w-12 h-12 rounded-full bg-surface-hover" />
                   <div className="flex-1">
-                    <div className="h-4 bg-zinc-800 rounded w-3/4 mb-2" />
-                    <div className="h-3 bg-zinc-800 rounded w-1/2" />
+                    <div className="h-4 bg-surface-hover rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-surface-hover rounded w-1/2" />
                   </div>
                 </div>
               </div>
@@ -243,11 +243,11 @@ export default function TeamPage() {
           </div>
         ) : members.length === 0 ? (
           <div className="glass-card rounded-xl p-8 md:p-12 text-center">
-            <Users className="w-10 h-10 md:w-12 md:h-12 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400 text-sm mb-2">
+            <Users className="w-10 h-10 md:w-12 md:h-12 text-faint mx-auto mb-4" />
+            <p className="text-muted text-sm mb-2">
               Nenhum membro na equipe
             </p>
-            <p className="text-zinc-500 text-xs">
+            <p className="text-subtle text-xs">
               Convide membros para acessar o sistema
             </p>
           </div>
@@ -279,7 +279,7 @@ export default function TeamPage() {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-zinc-100 font-semibold text-sm truncate">
+                      <h3 className="text-strong font-semibold text-sm truncate">
                         {member.name}
                       </h3>
                       <div className="flex items-center gap-1.5 mt-1">
@@ -300,7 +300,7 @@ export default function TeamPage() {
                       onChange={(e) =>
                         handleRoleChange(member.id, e.target.value)
                       }
-                      className="flex-1 text-xs bg-transparent border border-border rounded-lg px-2 py-1.5 text-zinc-300 focus:outline-none focus:border-gold"
+                      className="flex-1 text-xs bg-transparent border border-border rounded-lg px-2 py-1.5 text-strong focus:outline-none focus:border-gold"
                     >
                       <option value="admin">Admin</option>
                       <option value="editor">Editor</option>
@@ -308,7 +308,7 @@ export default function TeamPage() {
                     </select>
                     <button
                       onClick={() => handleRemove(member.id)}
-                      className="p-1.5 rounded-lg text-zinc-500 hover:text-ruby hover:bg-ruby-dim transition-colors"
+                      className="p-1.5 rounded-lg text-subtle hover:text-ruby hover:bg-ruby-dim transition-colors"
                       title="Remover"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -335,10 +335,10 @@ export default function TeamPage() {
                   <UserPlus className="w-5 h-5 text-gold" />
                 </div>
                 <div>
-                  <h2 className="text-zinc-100 font-semibold">
+                  <h2 className="text-strong font-semibold">
                     {inviteResult ? "Convite Criado!" : "Convidar Membro"}
                   </h2>
-                  <p className="text-zinc-500 text-xs">
+                  <p className="text-subtle text-xs">
                     {inviteResult
                       ? "Compartilhe os dados de acesso"
                       : "Crie o acesso para o membro"}
@@ -347,7 +347,7 @@ export default function TeamPage() {
               </div>
               <button
                 onClick={closeModal}
-                className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors"
+                className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-hover transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -363,26 +363,26 @@ export default function TeamPage() {
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-500 text-xs w-16">Nome:</span>
-                      <span className="text-zinc-200 text-sm font-medium">
+                      <span className="text-subtle text-xs w-16">Nome:</span>
+                      <span className="text-strong text-sm font-medium">
                         {inviteResult.name}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-500 text-xs w-16">Email:</span>
-                      <span className="text-zinc-200 text-sm font-mono">
+                      <span className="text-subtle text-xs w-16">Email:</span>
+                      <span className="text-strong text-sm font-mono">
                         {inviteResult.email}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-500 text-xs w-16">Senha:</span>
+                      <span className="text-subtle text-xs w-16">Senha:</span>
                       <span className="text-gold text-sm font-mono font-bold">
                         {inviteResult.password}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-500 text-xs w-16">Papel:</span>
-                      <span className="text-zinc-200 text-sm">
+                      <span className="text-subtle text-xs w-16">Papel:</span>
+                      <span className="text-strong text-sm">
                         {
                           roleConfig[
                             inviteResult.role as keyof typeof roleConfig
@@ -393,7 +393,7 @@ export default function TeamPage() {
                   </div>
                 </div>
 
-                <p className="text-zinc-500 text-xs">
+                <p className="text-subtle text-xs">
                   Compartilhe essas credenciais com o membro. Ele poderá
                   alterar a senha após o primeiro login.
                 </p>
@@ -401,7 +401,7 @@ export default function TeamPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={handleCopyCredentials}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border text-zinc-300 text-sm font-medium hover:bg-white/[0.05] transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border text-strong text-sm font-medium hover:bg-hover transition-colors"
                   >
                     {copied ? (
                       <>
@@ -435,7 +435,7 @@ export default function TeamPage() {
               /* Formulário de Convite */
               <form onSubmit={handleInvite} className="p-4 md:p-6 space-y-4">
                 <div>
-                  <label className="block text-zinc-400 text-sm mb-2">
+                  <label className="block text-muted text-sm mb-2">
                     Nome completo
                   </label>
                   <input
@@ -449,7 +449,7 @@ export default function TeamPage() {
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 text-sm mb-2">
+                  <label className="block text-muted text-sm mb-2">
                     E-mail de acesso
                   </label>
                   <input
@@ -462,7 +462,7 @@ export default function TeamPage() {
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 text-sm mb-2">
+                  <label className="block text-muted text-sm mb-2">
                     Permissão
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -477,7 +477,7 @@ export default function TeamPage() {
                             "flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all",
                             inviteRole === key
                               ? `${config.bg} ${config.border} ${config.color}`
-                              : "border-border text-zinc-500 hover:text-zinc-300 hover:border-border-light"
+                              : "border-border text-subtle hover:text-strong hover:border-border-light"
                           )}
                         >
                           <Icon className="w-5 h-5" />
@@ -501,7 +501,7 @@ export default function TeamPage() {
                     type="button"
                     onClick={closeModal}
                     disabled={isInviting}
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-border text-zinc-400 text-sm font-medium hover:text-zinc-200 hover:border-border-light transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-border text-muted text-sm font-medium hover:text-strong hover:border-border-light transition-colors disabled:opacity-50"
                   >
                     Cancelar
                   </button>

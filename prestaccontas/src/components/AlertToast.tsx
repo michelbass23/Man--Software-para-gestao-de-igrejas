@@ -81,8 +81,8 @@ export default function AlertToast() {
         className={cn(
           "w-[400px] rounded-2xl shadow-2xl border overflow-hidden backdrop-blur-xl",
           isOverdue
-            ? "bg-[#1a0a0a] border-ruby/40"
-            : "bg-[#1a150a] border-gold/40"
+            ? "bg-surface border-ruby/40"
+            : "bg-surface border-gold/40"
         )}
       >
         {/* Header */}
@@ -115,7 +115,7 @@ export default function AlertToast() {
                 {currentAlert.title}
               </span>
               {alerts.length > 1 && (
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-subtle">
                   Alerta {currentIndex + 1} de {alerts.length}
                 </span>
               )}
@@ -123,24 +123,24 @@ export default function AlertToast() {
           </div>
           <button
             onClick={handleDismiss}
-            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg hover:bg-active transition-colors"
           >
-            <X className="w-4 h-4 text-zinc-400" />
+            <X className="w-4 h-4 text-muted" />
           </button>
         </div>
 
         {/* Content */}
         <div className="px-5 py-4">
-          <p className="text-zinc-200 text-sm leading-relaxed">
+          <p className="text-strong text-sm leading-relaxed">
             {currentAlert.message}
           </p>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-white/5">
+        <div className="flex items-center justify-between px-5 py-4 border-t border-border">
           <button
             onClick={handleDismissAll}
-            className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="text-xs text-subtle hover:text-strong transition-colors"
           >
             Dispensar todos ({alerts.length})
           </button>

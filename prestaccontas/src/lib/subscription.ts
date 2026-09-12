@@ -2,7 +2,7 @@
 //
 // Para mudar a duração do teste, altere apenas esta constante.
 // Ex.: 7 dias -> 7 * 24 * 60 * 60 * 1000
-export const TRIAL_DURATION_MS = 5 * 60 * 1000; // 5 minutos de teste grátis
+export const TRIAL_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 dias de teste grátis
 
 export type AccessState =
   | "active" // assinatura paga em dia

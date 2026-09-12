@@ -177,17 +177,17 @@ export default function WhatsAppSendModal({
               <MessageCircle className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-zinc-100 font-semibold">
+              <h2 className="text-strong font-semibold">
                 Enviar via WhatsApp
               </h2>
-              <p className="text-zinc-500 text-xs">
+              <p className="text-subtle text-xs">
                 Selecione os membros que receberão o convite
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-hover transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -195,7 +195,7 @@ export default function WhatsAppSendModal({
 
         <div className="p-6 space-y-4">
           {/* Preview do Evento */}
-          <div className="rounded-xl border border-border bg-zinc-900/50 p-4">
+          <div className="rounded-xl border border-border bg-surface p-4">
             {event.banner_url && (
               <div className="w-full h-32 rounded-lg overflow-hidden mb-3">
                 <Image
@@ -207,25 +207,25 @@ export default function WhatsAppSendModal({
                 />
               </div>
             )}
-            <h3 className="text-zinc-100 font-semibold">{event.title}</h3>
+            <h3 className="text-strong font-semibold">{event.title}</h3>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full">
                 {EVENT_TYPE_LABELS[event.event_type]}
               </span>
             </div>
-            <p className="text-zinc-400 text-sm mt-2">
+            <p className="text-muted text-sm mt-2">
               {formatEventDate(event.event_date)}
               {event.event_time && ` às ${formatEventTime(event.event_time)}`}
             </p>
             {event.location && (
-              <p className="text-zinc-500 text-sm">📍 {event.location}</p>
+              <p className="text-subtle text-sm">📍 {event.location}</p>
             )}
           </div>
 
           {/* Seleção de Membros */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="text-zinc-400 text-sm">
+              <label className="text-muted text-sm">
                 Membros com WhatsApp ({selectedIds.size} de {members.length} selecionados)
               </label>
               <button
@@ -245,7 +245,7 @@ export default function WhatsAppSendModal({
               </div>
             ) : members.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-zinc-500 text-sm">
+                <p className="text-subtle text-sm">
                   Nenhum membro ativo com telefone cadastrado
                 </p>
               </div>
@@ -258,7 +258,7 @@ export default function WhatsAppSendModal({
                       "flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors",
                       selectedIds.has(member.id)
                         ? "bg-emerald-500/10"
-                        : "hover:bg-white/[0.03]"
+                        : "hover:bg-hover"
                     )}
                   >
                     <div
@@ -266,7 +266,7 @@ export default function WhatsAppSendModal({
                         "w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors",
                         selectedIds.has(member.id)
                           ? "bg-emerald-500 border-emerald-500"
-                          : "border-zinc-600"
+                          : "border-border-light"
                       )}
                     >
                       {selectedIds.has(member.id) && (
@@ -274,10 +274,10 @@ export default function WhatsAppSendModal({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-zinc-200 text-sm truncate">
+                      <p className="text-strong text-sm truncate">
                         {member.name}
                       </p>
-                      <p className="text-zinc-500 text-xs">{member.phone}</p>
+                      <p className="text-subtle text-xs">{member.phone}</p>
                     </div>
                     <button
                       type="button"
@@ -290,7 +290,7 @@ export default function WhatsAppSendModal({
                           "_blank"
                         );
                       }}
-                      className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                      className="p-1.5 rounded-lg text-subtle hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
                       title="Enviar individualmente"
                     >
                       <MessageCircle className="w-4 h-4" />
@@ -310,7 +310,7 @@ export default function WhatsAppSendModal({
                   Enviando... {sentCount} de {selectedIds.size}
                 </p>
               </div>
-              <div className="w-full bg-zinc-800 rounded-full h-1.5 mt-2">
+              <div className="w-full bg-surface-hover rounded-full h-1.5 mt-2">
                 <div
                   className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
                   style={{
@@ -326,7 +326,7 @@ export default function WhatsAppSendModal({
             <button
               type="button"
               onClick={handleCopyMessage}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-zinc-400 text-sm font-medium hover:text-zinc-200 hover:border-border-light transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-muted text-sm font-medium hover:text-strong hover:border-border-light transition-colors"
             >
               Copiar mensagem
             </button>

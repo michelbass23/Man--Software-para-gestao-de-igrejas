@@ -1,20 +1,33 @@
 @import "tailwindcss";
 
 /* ============================================================
-   PrestaContas — Tema Cinematográfico Ultra-Dark
+   PrestaContas — Sistema de Tema (claro / escuro)
+   ============================================================
+   Os utilitários do Tailwind referenciam --color-* que apontam
+   para uma segunda camada (--c-*). O tema escuro é o padrão
+   (:root). O tema claro sobrescreve --c-* quando o <html> tem
+   data-theme="light" (aplicado só no dashboard).
    ============================================================ */
 
 @theme inline {
-  --color-background: #09090B;
-  --color-foreground: #FAFAFA;
-  --color-surface: #18181B;
-  --color-surface-hover: #27272A;
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-light: rgba(255, 255, 255, 0.1);
+  --color-background: var(--c-bg);
+  --color-foreground: var(--c-fg);
+  --color-surface: var(--c-surface);
+  --color-surface-hover: var(--c-surface-hover);
+  --color-border: var(--c-border);
+  --color-border-light: var(--c-border-light);
+
+  /* Tokens semânticos de texto/superfície */
+  --color-strong: var(--c-strong);   /* títulos / valores  (era zinc-100/200/300) */
+  --color-muted: var(--c-muted);     /* texto corrido      (era zinc-400) */
+  --color-subtle: var(--c-subtle);   /* secundário         (era zinc-500) */
+  --color-faint: var(--c-faint);     /* desabilitado/ícone (era zinc-600) */
+  --color-hover: var(--c-hover);     /* hover de linha     (era white/[0.02..0.04]) */
+  --color-active: var(--c-active);   /* item ativo do menu (era white/[0.08]) */
 
   /* Cores de destaque */
-  --color-gold: #D4A843;
-  --color-gold-dim: rgba(212, 168, 67, 0.15);
+  --color-gold: var(--c-gold);
+  --color-gold-dim: var(--c-gold-dim);
   --color-ruby: #DC2626;
   --color-ruby-dim: rgba(220, 38, 38, 0.15);
   --color-emerald: #059669;
@@ -25,6 +38,80 @@
   /* Tipografia */
   --font-sans: var(--font-geist-sans), 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+/* ============================================================
+   Tema ESCURO (padrão)
+   ============================================================ */
+:root {
+  --c-bg: #09090B;
+  --c-fg: #FAFAFA;
+  --c-surface: #18181B;
+  --c-surface-hover: #27272A;
+  --c-border: rgba(255, 255, 255, 0.06);
+  --c-border-light: rgba(255, 255, 255, 0.1);
+
+  --c-strong: #f4f4f5;
+  --c-muted: #a1a1aa;
+  --c-subtle: #71717a;
+  --c-faint: #52525b;
+  --c-hover: rgba(255, 255, 255, 0.04);
+  --c-active: rgba(255, 255, 255, 0.08);
+
+  --c-gold: #D4A843;
+  --c-gold-dim: rgba(212, 168, 67, 0.15);
+
+  --c-card-from: rgba(24, 24, 27, 0.8);
+  --c-card-to: rgba(39, 39, 42, 0.4);
+  --c-card-from-hover: rgba(24, 24, 27, 0.9);
+  --c-card-to-hover: rgba(39, 39, 42, 0.6);
+  --c-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  --c-input-bg: rgba(24, 24, 27, 0.6);
+  --c-scrollbar: rgba(255, 255, 255, 0.1);
+  --c-scrollbar-hover: rgba(255, 255, 255, 0.2);
+  --c-tooltip-bg: #27272A;
+  --c-tooltip-fg: #FAFAFA;
+
+  --c-skeleton-a: rgba(255, 255, 255, 0.03);
+  --c-skeleton-b: rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================================
+   Tema CLARO (aplicado via data-theme="light" no <html>)
+   ============================================================ */
+:root[data-theme="light"] {
+  --c-bg: #f6f7f9;
+  --c-fg: #0f172a;
+  --c-surface: #ffffff;
+  --c-surface-hover: #eef1f5;
+  --c-border: rgba(15, 23, 42, 0.1);
+  --c-border-light: rgba(15, 23, 42, 0.16);
+
+  --c-strong: #18181b;
+  --c-muted: #52525b;
+  --c-subtle: #71717a;
+  --c-faint: #a1a1aa;
+  --c-hover: rgba(15, 23, 42, 0.04);
+  --c-active: rgba(15, 23, 42, 0.07);
+
+  --c-gold: #B4801F;
+  --c-gold-dim: rgba(180, 128, 31, 0.12);
+
+  --c-card-from: #ffffff;
+  --c-card-to: #ffffff;
+  --c-card-from-hover: #ffffff;
+  --c-card-to-hover: #ffffff;
+  --c-card-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+
+  --c-input-bg: #ffffff;
+  --c-scrollbar: rgba(15, 23, 42, 0.18);
+  --c-scrollbar-hover: rgba(15, 23, 42, 0.3);
+  --c-tooltip-bg: #18181b;
+  --c-tooltip-fg: #fafafa;
+
+  --c-skeleton-a: rgba(15, 23, 42, 0.04);
+  --c-skeleton-b: rgba(15, 23, 42, 0.08);
 }
 
 /* ============================================================
@@ -56,19 +143,19 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--c-scrollbar);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--c-scrollbar-hover);
 }
 
 /* ============================================================
    Componentes de Superfície (Glassmorphism)
    ============================================================ */
 .glass-card {
-  background: linear-gradient(135deg, rgba(24, 24, 27, 0.8), rgba(39, 39, 42, 0.4));
+  background: linear-gradient(135deg, var(--c-card-from), var(--c-card-to));
   border: 1px solid var(--color-border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -81,9 +168,9 @@ body {
 
 .glass-card-hover:hover {
   border-color: var(--color-border-light);
-  background: linear-gradient(135deg, rgba(24, 24, 27, 0.9), rgba(39, 39, 42, 0.6));
+  background: linear-gradient(135deg, var(--c-card-from-hover), var(--c-card-to-hover));
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--c-card-shadow);
 }
 
 /* ============================================================
@@ -153,9 +240,9 @@ body {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 75%
+    var(--c-skeleton-a) 25%,
+    var(--c-skeleton-b) 50%,
+    var(--c-skeleton-a) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -209,7 +296,7 @@ body {
   input[type="date"],
   select,
   textarea {
-    background: rgba(24, 24, 27, 0.6);
+    background: var(--c-input-bg);
     border: 1px solid var(--color-border-light);
     border-radius: 10px;
     padding: 10px 14px;
@@ -241,8 +328,8 @@ body {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
-  background: #27272A;
-  color: #FAFAFA;
+  background: var(--c-tooltip-bg);
+  color: var(--c-tooltip-fg);
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 12px;

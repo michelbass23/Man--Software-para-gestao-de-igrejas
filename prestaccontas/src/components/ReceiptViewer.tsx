@@ -90,16 +90,16 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
       {/* Modal Overlay - Fullscreen */}
       {isOpen && <div className="fixed inset-0 z-[9999] flex flex-col bg-black/95 backdrop-blur-md">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-zinc-900/80 border-b border-zinc-800">
+        <div className="flex items-center justify-between px-6 py-4 bg-surface/95 border-b border-border">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-gold-dim flex items-center justify-center">
               <FileText className="w-5 h-5 text-gold" />
             </div>
             <div>
-              <h3 className="text-zinc-100 font-semibold text-base">
+              <h3 className="text-strong font-semibold text-base">
                 Comprovante
               </h3>
-              <p className="text-zinc-500 text-sm truncate max-w-[500px]">
+              <p className="text-subtle text-sm truncate max-w-[500px]">
                 {fileName}
               </p>
             </div>
@@ -108,18 +108,18 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
           <div className="flex items-center gap-3">
             {/* Zoom controls (apenas para imagens) */}
             {isImage && !imageError && (
-              <div className="flex items-center gap-1 px-3 py-2 rounded-xl bg-zinc-800/80 border border-zinc-700">
+              <div className="flex items-center gap-1 px-3 py-2 rounded-xl bg-surface-hover border border-border-light">
                 <button
                   onClick={handleZoomOut}
                   disabled={zoom <= 0.5}
-                  className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
+                  className="p-1.5 rounded-lg text-muted hover:text-strong hover:bg-surface-hover transition-colors disabled:opacity-30"
                   title="Diminuir zoom"
                 >
                   <ZoomOut className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleResetZoom}
-                  className="px-3 py-1 text-sm text-zinc-300 hover:text-white font-mono hover:bg-zinc-700 rounded-lg transition-colors"
+                  className="px-3 py-1 text-sm text-strong hover:text-strong font-mono hover:bg-surface-hover rounded-lg transition-colors"
                   title="Resetar zoom"
                 >
                   {Math.round(zoom * 100)}%
@@ -127,7 +127,7 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
                 <button
                   onClick={handleZoomIn}
                   disabled={zoom >= 3}
-                  className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
+                  className="p-1.5 rounded-lg text-muted hover:text-strong hover:bg-surface-hover transition-colors disabled:opacity-30"
                   title="Aumentar zoom"
                 >
                   <ZoomIn className="w-4 h-4" />
@@ -138,7 +138,7 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
             {/* Fullscreen toggle */}
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-2.5 rounded-xl text-muted hover:text-strong hover:bg-surface-hover transition-colors"
               title={isFullscreen ? "Sair da tela cheia" : "Tela cheia"}
             >
               {isFullscreen ? (
@@ -163,7 +163,7 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-2.5 rounded-xl text-muted hover:text-strong hover:bg-surface-hover transition-colors"
               title="Abrir em nova aba"
             >
               <ExternalLink className="w-5 h-5" />
@@ -172,7 +172,7 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
             {/* Close */}
             <button
               onClick={handleClose}
-              className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="p-2.5 rounded-xl text-muted hover:text-strong hover:bg-surface-hover transition-colors"
               title="Fechar (ESC)"
             >
               <X className="w-5 h-5" />
@@ -181,7 +181,7 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
         </div>
 
         {/* Content - Full height */}
-        <div className="flex-1 overflow-hidden flex items-center justify-center p-6 bg-zinc-950/50">
+        <div className="flex-1 overflow-hidden flex items-center justify-center p-6 bg-background/50">
           {isImage && !imageError ? (
             <div className="overflow-auto w-full h-full flex items-center justify-center">
               <img
@@ -201,20 +201,20 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
           ) : isPdf ? (
             <iframe
               src={url}
-              className="w-full h-full rounded-xl border border-zinc-800 shadow-2xl"
+              className="w-full h-full rounded-xl border border-border shadow-2xl"
               title="Comprovante PDF"
             />
           ) : (
             <div className="flex flex-col items-center justify-center">
-              <div className="w-24 h-24 rounded-2xl bg-zinc-800 flex items-center justify-center mb-6">
-                <FileText className="w-12 h-12 text-zinc-600" />
+              <div className="w-24 h-24 rounded-2xl bg-surface-hover flex items-center justify-center mb-6">
+                <FileText className="w-12 h-12 text-faint" />
               </div>
-              <p className="text-zinc-300 text-xl font-medium mb-3">
+              <p className="text-strong text-xl font-medium mb-3">
                 {imageError
                   ? "Erro ao carregar imagem"
                   : "Visualização não disponível"}
               </p>
-              <p className="text-zinc-500 text-base mb-8 text-center max-w-lg">
+              <p className="text-subtle text-base mb-8 text-center max-w-lg">
                 {imageError
                   ? "O arquivo pode não existir ou você não tem permissão para acessá-lo."
                   : "Este tipo de arquivo não pode ser visualizado diretamente."}
@@ -231,16 +231,16 @@ export default function ReceiptViewer({ url, children }: ReceiptViewerProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-center gap-6 px-6 py-3 bg-zinc-900/80 border-t border-zinc-800">
+        <div className="flex items-center justify-center gap-6 px-6 py-3 bg-surface/95 border-t border-border">
           {isImage && !imageError && (
             <>
-              <span className="text-zinc-500 text-sm">
+              <span className="text-subtle text-sm">
                 Duplo clique para resetar zoom
               </span>
-              <span className="text-zinc-700">•</span>
+              <span className="text-faint">•</span>
             </>
           )}
-          <span className="text-zinc-500 text-sm">
+          <span className="text-subtle text-sm">
             Pressione ESC para fechar
           </span>
         </div>

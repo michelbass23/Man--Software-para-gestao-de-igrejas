@@ -254,7 +254,7 @@ export default function EntryModal({
               )}
             </div>
             <div>
-              <h2 className="text-zinc-100 font-semibold">
+              <h2 className="text-strong font-semibold">
                 {isEditing
                   ? isEntry
                     ? "Editar Entrada"
@@ -263,7 +263,7 @@ export default function EntryModal({
                     ? "Nova Entrada"
                     : "Nova Despesa"}
               </h2>
-              <p className="text-zinc-500 text-xs">
+              <p className="text-subtle text-xs">
                 {isEditing
                   ? "Altere os dados do lançamento"
                   : "Preencha os dados do lançamento"}
@@ -272,7 +272,7 @@ export default function EntryModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-hover transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -280,7 +280,7 @@ export default function EntryModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">Data</label>
+            <label className="block text-muted text-sm mb-2">Data</label>
             <input
               type="date"
               value={date}
@@ -290,7 +290,7 @@ export default function EntryModal({
           </div>
 
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               {isEntry ? "Nome de quem fez a oferta" : "Nome de quem fez a despesa"}
             </label>
             <input
@@ -302,7 +302,7 @@ export default function EntryModal({
           </div>
 
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Categoria
             </label>
             <select
@@ -320,11 +320,11 @@ export default function EntryModal({
           </div>
 
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Valor (R$)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle text-sm">
                 R$
               </span>
               <input
@@ -340,7 +340,7 @@ export default function EntryModal({
           </div>
 
           <div>
-            <label className="block text-zinc-400 text-sm mb-2">
+            <label className="block text-muted text-sm mb-2">
               Descrição (opcional)
             </label>
             <textarea
@@ -354,7 +354,7 @@ export default function EntryModal({
           {/* Receipt Upload */}
           {tenantId && (
             <div className="space-y-2">
-              <label className="block text-zinc-400 text-sm mb-2">
+              <label className="block text-muted text-sm mb-2">
                 Comprovante (opcional)
               </label>
 
@@ -379,18 +379,18 @@ export default function EntryModal({
                       </div>
                     </div>
                   ) : isPdf ? (
-                    <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-white/[0.02]">
+                    <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-hover">
                       <div className="flex-1 min-w-0">
-                        <p className="text-zinc-300 text-sm truncate">
+                        <p className="text-strong text-sm truncate">
                           Comprovante PDF
                         </p>
-                        <p className="text-zinc-500 text-xs">PDF</p>
+                        <p className="text-subtle text-xs">PDF</p>
                       </div>
                       <button
                         type="button"
                         onClick={handleRemoveReceipt}
                         disabled={isLoading}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-ruby hover:bg-ruby-dim transition-colors"
+                        className="p-1.5 rounded-lg text-subtle hover:text-ruby hover:bg-ruby-dim transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -406,13 +406,13 @@ export default function EntryModal({
                   )}
                 >
                   {isUploading ? (
-                    <p className="text-zinc-500 text-sm">Enviando...</p>
+                    <p className="text-subtle text-sm">Enviando...</p>
                   ) : (
                     <>
-                      <p className="text-zinc-500 text-sm">
+                      <p className="text-subtle text-sm">
                         Clique para selecionar arquivo
                       </p>
-                      <p className="text-zinc-600 text-xs">
+                      <p className="text-faint text-xs">
                         JPG, PNG, WEBP, GIF ou PDF (max 5MB)
                       </p>
                     </>
@@ -446,7 +446,7 @@ export default function EntryModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-zinc-400 text-sm font-medium hover:text-zinc-200 hover:border-border-light transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-border text-muted text-sm font-medium hover:text-strong hover:border-border-light transition-colors"
             >
               Cancelar
             </button>

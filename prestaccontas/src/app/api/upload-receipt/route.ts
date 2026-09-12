@@ -42,6 +42,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "application/pdf",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json(
+        { error: "Tipo não permitido. Use: JPG, PNG, WEBP, GIF ou PDF" },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Arquivo muito grande. Máximo: 5MB" },
+        { status: 400 }
+      );
+    }
+
     // Verificar se o tenantId corresponde ao do usuário
     if (tenantId !== profile.tenant_id) {
       return NextResponse.json(

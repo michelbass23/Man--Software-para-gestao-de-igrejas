@@ -1,4 +1,5 @@
 import DashboardShell from "@/components/DashboardShell";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTenantAccess } from "@/lib/subscription";
 import { reconcileTenantAccess } from "@/lib/subscription-reconcile";
@@ -91,18 +92,20 @@ export default async function DashboardLayout({
   const userRole = profile.role || "admin";
 
   return (
-    <DashboardShell
-      tenantName={tenantName}
-      tenantLogoUrl={tenantLogoUrl}
-      userName={userName}
-      userRole={userRole}
-      tenantPlan={tenantPlan}
-      isDemo={isDemo}
-      subscriptionOverdueSince={subscriptionOverdueSince}
-      trialEndsAt={trialEndsAt}
-      trialExpired={trialExpired}
-    >
-      {children}
-    </DashboardShell>
+    <ThemeProvider>
+      <DashboardShell
+        tenantName={tenantName}
+        tenantLogoUrl={tenantLogoUrl}
+        userName={userName}
+        userRole={userRole}
+        tenantPlan={tenantPlan}
+        isDemo={isDemo}
+        subscriptionOverdueSince={subscriptionOverdueSince}
+        trialEndsAt={trialEndsAt}
+        trialExpired={trialExpired}
+      >
+        {children}
+      </DashboardShell>
+    </ThemeProvider>
   );
 }

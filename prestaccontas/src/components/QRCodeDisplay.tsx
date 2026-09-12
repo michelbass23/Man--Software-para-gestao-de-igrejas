@@ -137,12 +137,12 @@ export default function QRCodeDisplay({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div>
-            <h2 className="text-zinc-100 font-semibold">Check-in do Evento</h2>
-            <p className="text-zinc-500 text-xs">{eventName}</p>
+            <h2 className="text-strong font-semibold">Check-in do Evento</h2>
+            <p className="text-subtle text-xs">{eventName}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="p-2 rounded-lg text-subtle hover:text-strong hover:bg-hover transition-colors"
           >
             ✕
           </button>
@@ -157,7 +157,7 @@ export default function QRCodeDisplay({
                 "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
                 activeTab === "temporary"
                   ? "bg-gold/20 text-gold border border-gold/30"
-                  : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05]"
+                  : "text-subtle hover:text-strong hover:bg-hover"
               )}
             >
               <Clock className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export default function QRCodeDisplay({
                 "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
                 activeTab === "fixed"
                   ? "bg-emerald/20 text-emerald border border-emerald/30"
-                  : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05]"
+                  : "text-subtle hover:text-strong hover:bg-hover"
               )}
             >
               <Printer className="w-3.5 h-3.5" />
@@ -182,7 +182,7 @@ export default function QRCodeDisplay({
             <>
               <div className="flex flex-col items-center mb-4">
                 {isGenerating ? (
-                  <div className="w-[280px] h-[280px] rounded-xl bg-zinc-900 flex items-center justify-center">
+                  <div className="w-[280px] h-[280px] rounded-xl bg-surface flex items-center justify-center">
                     <Loader2 className="w-8 h-8 text-gold animate-spin" />
                   </div>
                 ) : token ? (
@@ -236,7 +236,7 @@ export default function QRCodeDisplay({
                       {formatTime(timeLeft)}
                     </span>
                   </div>
-                  <p className="text-[10px] text-zinc-500 mt-1">
+                  <p className="text-[10px] text-subtle mt-1">
                     Tempo restante deste QR Code
                   </p>
                 </div>
@@ -253,8 +253,8 @@ export default function QRCodeDisplay({
                 </button>
               )}
 
-              <div className="p-3 rounded-xl bg-zinc-900/50 border border-border">
-                <p className="text-zinc-400 text-xs text-center">
+              <div className="p-3 rounded-xl bg-surface border border-border">
+                <p className="text-muted text-xs text-center">
                   Projete este QR Code na tela da igreja.
                   <br />
                   Expira em 5 minutos por seguranca.
@@ -280,7 +280,7 @@ export default function QRCodeDisplay({
                 <p className="text-emerald text-xs text-center font-medium mb-1">
                   QR Code Permanente
                 </p>
-                <p className="text-zinc-400 text-[10px] text-center">
+                <p className="text-muted text-[10px] text-center">
                   Nao expira. Ideal para imprimir e fixar na entrada da igreja.
                   <br />
                   Varios membros podem usar o mesmo dispositivo.
@@ -307,7 +307,7 @@ export default function QRCodeDisplay({
                       printWindow.print();
                     }
                   }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 text-zinc-200 text-sm font-medium hover:bg-zinc-700 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-hover text-strong text-sm font-medium hover:bg-surface-hover transition-colors"
                 >
                   <Printer className="w-4 h-4" />
                   Imprimir
@@ -317,7 +317,7 @@ export default function QRCodeDisplay({
                     navigator.clipboard.writeText(fixedUrl);
                     showToast("Link copiado!");
                   }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 text-zinc-200 text-sm font-medium hover:bg-zinc-700 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-hover text-strong text-sm font-medium hover:bg-surface-hover transition-colors"
                 >
                   <Link2 className="w-4 h-4" />
                   Copiar Link
@@ -330,28 +330,28 @@ export default function QRCodeDisplay({
           <div className="glass-card p-4 mt-4">
             <div className="flex items-center gap-2 mb-3">
               <Users className="w-4 h-4 text-gold" />
-              <h3 className="text-sm font-semibold text-zinc-200">
+              <h3 className="text-sm font-semibold text-strong">
                 Presentes
               </h3>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="text-center">
-                <p className="text-2xl font-bold font-mono text-zinc-100">
+                <p className="text-2xl font-bold font-mono text-strong">
                   {stats.total}
                 </p>
-                <p className="text-[10px] text-zinc-500">Total</p>
+                <p className="text-[10px] text-subtle">Total</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold font-mono text-emerald">
                   {stats.members}
                 </p>
-                <p className="text-[10px] text-zinc-500">Membros</p>
+                <p className="text-[10px] text-subtle">Membros</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold font-mono text-blue-400">
                   {stats.visitors}
                 </p>
-                <p className="text-[10px] text-zinc-500">Visitantes</p>
+                <p className="text-[10px] text-subtle">Visitantes</p>
               </div>
             </div>
 
@@ -360,7 +360,7 @@ export default function QRCodeDisplay({
               <div className="mt-3 pt-3 border-t border-border">
                 <button
                   onClick={() => setShowAttendees(!showAttendees)}
-                  className="w-full flex items-center justify-between text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="w-full flex items-center justify-between text-xs text-muted hover:text-strong transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
                     <UserCheck className="w-3.5 h-3.5" />
@@ -378,9 +378,9 @@ export default function QRCodeDisplay({
                     {attendees.map((a) => (
                       <div
                         key={a.id}
-                        className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-zinc-900/50"
+                        className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-surface"
                       >
-                        <span className="text-xs text-zinc-200 truncate">
+                        <span className="text-xs text-strong truncate">
                           {a.name}
                         </span>
                         <span

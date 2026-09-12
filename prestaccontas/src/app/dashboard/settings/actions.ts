@@ -41,6 +41,41 @@ export async function getTenantSettings() {
   return tenant;
 }
 
+export async function exportAllTenantData() {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  const [
+    tenant,
+    profiles,
+    members,
+    entries,
+    expenses,
+    events,
+    attendance,
+  ] = await Promise.all([
+    supabase.from("tenants").select("*").eq("id", tenantId).single(),
+    supabase.from("profiles").select("id, name, role, created_at").eq("tenant_id", tenantId),
+    supabase.from("members").select("*").eq("tenant_id", tenantId),
+    supabase.from("entries").select("*").eq("tenant_id", tenantId),
+    supabase.from("expenses").select("*").eq("tenant_id", tenantId),
+    supabase.from("events").select("*").eq("tenant_id", tenantId),
+    supabase.from("attendance").select("*").eq("tenant_id", tenantId),
+  ]);
+
+  return {
+    exportadoEm: new Date().toISOString(),
+    formato: "PrestaContas — exportação LGPD (portabilidade de dados)",
+    igreja: tenant.data ?? null,
+    usuarios: profiles.data ?? [],
+    membros: members.data ?? [],
+    entradas: entries.data ?? [],
+    despesas: expenses.data ?? [],
+    eventos: events.data ?? [],
+    presencas: attendance.data ?? [],
+  };
+}
+
 export async function updateTenantLogo(logoUrl: string | null) {
   const supabase = await createClient();
   const tenantId = await getTenantId();

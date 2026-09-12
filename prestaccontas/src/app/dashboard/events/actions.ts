@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { logAudit, diffFields } from "@/lib/audit";
+import { requireEditor } from "@/lib/authz";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -101,6 +102,12 @@ export async function createEvent(data: {
   responsibleName?: string;
   status?: string;
 }) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
   const {
@@ -145,6 +152,12 @@ export async function updateEvent(
     status?: string;
   }
 ) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 
@@ -205,6 +218,12 @@ export async function updateEvent(
 }
 
 export async function deleteEvent(id: string) {
+  try {
+    await requireEditor();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Sem permissão" };
+  }
+
   const supabase = await createClient();
   const tenantId = await getTenantId();
 

@@ -37,10 +37,10 @@ const variantStyles = {
     accent: "text-emerald",
   },
   default: {
-    iconBg: "bg-zinc-800/50",
-    iconColor: "text-zinc-400",
+    iconBg: "bg-surface-hover",
+    iconColor: "text-muted",
     glow: "",
-    accent: "text-zinc-100",
+    accent: "text-strong",
   },
 };
 
@@ -94,12 +94,12 @@ export default function MetricCard({
           </span>
         )}
       </div>
-      <p className="text-zinc-400 text-sm font-medium mb-1">{title}</p>
+      <p className="text-muted text-sm font-medium mb-1">{title}</p>
       <p className={cn("text-2xl font-semibold font-mono tracking-tight", styles.accent)}>
         {isCurrency ? formatCurrency(value) : value}
       </p>
       {trend && (
-        <p className="text-zinc-500 text-xs mt-2">{trend.label}</p>
+        <p className="text-subtle text-xs mt-2">{trend.label}</p>
       )}
     </div>
   );

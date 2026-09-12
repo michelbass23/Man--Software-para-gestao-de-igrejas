@@ -296,7 +296,7 @@ export async function getEventReport(eventId: string) {
     .eq("tenant_id", tenantId)
     .single();
 
-  if (!event) return { event: null, attendance: [], absentMembers: [] };
+  if (!event) return { event: null, attendance: [], absentMembers: [], churchName: "Igreja", logoUrl: null };
 
   // Buscar presencas
   const { data: attendance } = await supabase
@@ -323,9 +323,17 @@ export async function getEventReport(eventId: string) {
     .filter((m) => !attendedNames.has(m.name.trim().toLowerCase()))
     .map((m) => ({ id: m.id, name: m.name, phone: m.phone }));
 
+  const { data: tenant } = await supabase
+    .from("tenants")
+    .select("name, logo_url")
+    .eq("id", tenantId)
+    .single();
+
   return {
     event,
     attendance: attendance || [],
     absentMembers,
+    churchName: tenant?.name || "Igreja",
+    logoUrl: tenant?.logo_url || null,
   };
 }
