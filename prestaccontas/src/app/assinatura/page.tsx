@@ -1,34 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Check, CreditCard, Shield, ArrowRight, LogOut } from "lucide-react";
+import { Loader2, Check, CreditCard, Shield, ArrowRight, LogOut, ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/app/login/actions";
 import WhatsAppFloatButton from "@/components/WhatsAppFloatButton";
 
-type Plan = "monthly" | "annual";
+type Plan = "starter_monthly" | "starter_annual" | "monthly" | "annual";
 
 const plans = {
+  starter_monthly: {
+    name: "Essencial",
+    price: 59,
+    period: "/mês",
+    description: "Para igrejas pequenas",
+    features: [
+      "Até 150 membros",
+      "Controle financeiro completo",
+      "Eventos e agenda",
+      "Check-in por QR Code",
+      "Relatórios em PDF",
+    ],
+  },
+  starter_annual: {
+    name: "Essencial",
+    price: 590,
+    period: "/ano",
+    description: "Economize 2 meses",
+    features: [
+      "Tudo do Essencial Mensal",
+      "2 meses grátis",
+    ],
+  },
   monthly: {
-    name: "Mensal",
+    name: "Completo",
     price: 147,
     period: "/mês",
-    description: "Cancele quando quiser",
+    description: "Para igrejas em crescimento",
     features: [
+      "Membros ilimitados",
       "Controle financeiro completo",
-      "Gestão de membros",
       "Relatórios detalhados",
       "Eventos e agenda",
+      "Equipe com múltiplos usuários",
       "Suporte prioritário",
     ],
   },
   annual: {
-    name: "Anual",
+    name: "Completo",
     price: 1470,
     period: "/ano",
     description: "Economize 2 meses",
     features: [
-      "Tudo do plano Mensal",
+      "Tudo do Completo Mensal",
       "2 meses grátis",
       "Suporte VIP",
       "Atualizações prioritárias",
@@ -52,11 +76,23 @@ function formatCpfCnpj(value: string) {
 }
 
 export default function AssinaturaPage() {
-  const [selectedPlan, setSelectedPlan] = useState<Plan>("monthly");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  const [selectedTier, setSelectedTier] = useState<"starter" | "pro">("pro");
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const selectedPlan: Plan =
+    selectedTier === "starter"
+      ? billingPeriod === "annual"
+        ? "starter_annual"
+        : "starter_monthly"
+      : billingPeriod === "annual"
+        ? "annual"
+        : "monthly";
+
+  const currentPlan = plans[selectedPlan];
 
   async function handlePayment() {
     setError(null);
@@ -111,7 +147,7 @@ export default function AssinaturaPage() {
             <span className="text-black font-bold text-lg">P</span>
           </div>
           <span className="text-xl font-semibold text-zinc-100">
-            PrestaContas
+            Maná Sistemas
           </span>
         </div>
 
@@ -125,37 +161,81 @@ export default function AssinaturaPage() {
           </p>
         </div>
 
+        {/* Voltar ao painel (trial ativo) */}
+        <Link
+          href="/dashboard"
+          className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-gold/30 text-gold text-sm font-medium hover:bg-gold/10 transition-all mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Continuar com o teste grátis
+          <Sparkles className="w-4 h-4" />
+        </Link>
+
+        {/* Toggle mensal/anual */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <button
+            onClick={() => setBillingPeriod("monthly")}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              billingPeriod === "monthly"
+                ? "bg-gold text-black"
+                : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700"
+            }`}
+          >
+            Mensal
+          </button>
+          <button
+            onClick={() => setBillingPeriod("annual")}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              billingPeriod === "annual"
+                ? "bg-gold text-black"
+                : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700"
+            }`}
+          >
+            Anual{" "}
+            <span className="text-xs opacity-80">-17%</span>
+          </button>
+        </div>
+
         {/* Planos */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          {(Object.keys(plans) as Plan[]).map((planKey) => {
+          {(["starter", "pro"] as const).map((tier) => {
+            const planKey: Plan =
+              tier === "starter"
+                ? billingPeriod === "annual"
+                  ? "starter_annual"
+                  : "starter_monthly"
+                : billingPeriod === "annual"
+                  ? "annual"
+                  : "monthly";
             const plan = plans[planKey];
-            const isSelected = selectedPlan === planKey;
-            const isAnnual = planKey === "annual";
+            const isSelected = selectedTier === tier;
+            const isPro = tier === "pro";
 
             return (
               <button
-                key={planKey}
-                onClick={() => setSelectedPlan(planKey)}
+                key={tier}
+                onClick={() => setSelectedTier(tier)}
                 className={`relative p-5 rounded-2xl border-2 text-left transition-all ${
                   isSelected
                     ? "border-gold bg-gold/5"
                     : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
                 }`}
               >
-                {isAnnual && (
+                {isPro && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gold text-black text-xs font-bold rounded-full">
-                    -17%
+                    Mais popular
                   </span>
                 )}
 
                 <div className="mb-3">
                   <span
-                    className={`text-sm font-medium ${
-                      isSelected ? "text-gold" : "text-zinc-400"
+                    className={`text-sm font-semibold ${
+                      isSelected ? "text-gold" : "text-zinc-300"
                     }`}
                   >
                     {plan.name}
                   </span>
+                  <p className="text-zinc-500 text-xs mt-0.5">{plan.description}</p>
                 </div>
 
                 <div className="mb-1">
@@ -165,7 +245,16 @@ export default function AssinaturaPage() {
                   <span className="text-zinc-500 text-sm">{plan.period}</span>
                 </div>
 
-                <p className="text-zinc-500 text-xs">{plan.description}</p>
+                {isPro && (
+                  <p className="text-emerald-400 text-xs font-medium mt-1">
+                    Membros ilimitados
+                  </p>
+                )}
+                {!isPro && (
+                  <p className="text-zinc-400 text-xs font-medium mt-1">
+                    Até 150 membros
+                  </p>
+                )}
 
                 {isSelected && (
                   <div className="absolute top-4 right-4 w-5 h-5 rounded-full bg-gold flex items-center justify-center">
@@ -183,7 +272,7 @@ export default function AssinaturaPage() {
             Incluído no plano:
           </h3>
           <ul className="space-y-2">
-            {plans[selectedPlan].features.map((feature, i) => (
+            {currentPlan.features.map((feature, i) => (
               <li key={i} className="flex items-center gap-2 text-sm text-zinc-400">
                 <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 {feature}

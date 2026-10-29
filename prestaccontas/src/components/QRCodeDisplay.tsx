@@ -299,7 +299,7 @@ export default function QRCodeDisplay({
                             <h2 style="margin-bottom:8px;">${eventName}</h2>
                             <p style="color:#a1a1aa;font-size:14px;margin-bottom:24px;">Escaneie para confirmar presenca</p>
                             <img src="${fixedQrCodeUrl}" width="300" height="300" style="border-radius:12px;" />
-                            <p style="color:#71717a;font-size:10px;margin-top:16px;">PrestaContas - Sistema de Presenca</p>
+                            <p style="color:#71717a;font-size:10px;margin-top:16px;">Maná Sistemas - Sistema de Presença</p>
                           </body>
                         </html>
                       `);

@@ -57,15 +57,17 @@ export default async function DashboardLayout({
 
       let access = resolveTenantAccess(tenant);
 
-      // Usuário que pagou mas cujo webhook da Asaas ainda não chegou ficaria
-      // preso no TrialGate / tela de bloqueio. Nesses estados, confere direto
-      // com a Asaas antes de barrar o acesso.
+      // Se o tenant tem assinatura na Asaas mas ainda não está ativo,
+      // confere direto com a Asaas antes de mostrar estado antigo.
+      // Isso cobre: webhook atrasado, usuário que fez logout manual
+      // antes do redirecionamento automático, etc.
       if (
-        (access.state === "trial_expired" || access.state === "blocked") &&
+        access.state !== "active" &&
         tenant.asaas_subscription_id
       ) {
-        access = await reconcileTenantAccess(profile.tenant_id, tenant);
-        if (access.state === "active") {
+        const reconciled = await reconcileTenantAccess(profile.tenant_id, tenant);
+        if (reconciled.state === "active") {
+          access = reconciled;
           tenantPlan = "pro";
         }
       }

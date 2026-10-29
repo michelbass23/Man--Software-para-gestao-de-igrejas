@@ -1,0 +1,11 @@
+ERR TypeError: Failed to parse URL from https://tqhqbelwtevxlfquzsmt.supabase.co/rest/v1/tenants?select=id,name,plan,pending_plan
+    at new Request (node:internal/deps/undici/undici:12058:19)
+    at fetch (node:internal/deps/undici/undici:12981:25)
+    at fetch (node:internal/deps/undici/undici:17692:10)
+    at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+    at [eval]:1:374
+    at [eval]:1:1259
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)

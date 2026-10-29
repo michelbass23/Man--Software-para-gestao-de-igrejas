@@ -48,12 +48,23 @@ function LoginContent() {
   const handleDemo = async () => {
     setIsDemoLoading(true);
     setDemoError(null);
-    const result = await loginDemo();
-    if (result && "error" in result && result.error) {
-      setDemoError(result.error);
+    try {
+      const result = await loginDemo();
+      if (result && "error" in result && result.error) {
+        setDemoError(result.error);
+        setIsDemoLoading(false);
+      } else if (result && "redirectTo" in result && result.redirectTo) {
+        router.push(result.redirectTo);
+      } else {
+        setDemoError("Resposta inesperada do servidor. Tente novamente.");
+        setIsDemoLoading(false);
+      }
+    } catch (err) {
+      console.error("Erro ao iniciar demo:", err);
+      setDemoError(
+        "Falha ao iniciar a demonstração. Verifique se o Supabase está ativo e sua internet."
+      );
       setIsDemoLoading(false);
-    } else if (result && "redirectTo" in result && result.redirectTo) {
-      router.push(result.redirectTo);
     }
   };
 
@@ -157,9 +168,19 @@ function LoginContent() {
 
             {/* Password */}
             <div>
-              <label className="block text-zinc-400 text-sm mb-2">
-                Senha
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-zinc-400 text-sm">
+                  Senha
+                </label>
+                {!isSignUp && (
+                  <Link
+                    href="/login/forgot-password"
+                    className="text-xs text-gold hover:text-gold/80 transition-colors"
+                  >
+                    Esqueci minha senha
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}

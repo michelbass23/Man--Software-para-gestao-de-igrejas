@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, LogOut } from "lucide-react";
+import { signOut } from "@/app/login/actions";
 
 const POLL_INTERVAL_MS = 2500;
 const MAX_WAIT_MS = 45000;
@@ -10,24 +11,19 @@ export default function SubscriptionSuccessPage() {
   const [confirmed, setConfirmed] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
 
-  const goToDashboard = useCallback(() => {
-    window.location.href = "/dashboard";
-  }, []);
-
   const checkStatus = useCallback(async () => {
     try {
       const res = await fetch("/api/subscription/status", { cache: "no-store" });
       const data = await res.json();
       if (data.active) {
         setConfirmed(true);
-        setTimeout(goToDashboard, 1500);
         return true;
       }
     } catch {
       // ignora e tenta de novo no próximo ciclo
     }
     return false;
-  }, [goToDashboard]);
+  }, []);
 
   useEffect(() => {
     let stopped = false;
@@ -67,9 +63,19 @@ export default function SubscriptionSuccessPage() {
             <h1 className="text-2xl font-bold text-zinc-100 mb-3">
               Assinatura confirmada!
             </h1>
-            <p className="text-zinc-400 mb-2">
-              Tudo certo com o seu pagamento. Redirecionando para o dashboard...
+            <p className="text-zinc-400 mb-6">
+              Pagamento aprovado! Faça login novamente para acessar o sistema
+              com seu plano ativo.
             </p>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Ir para o login
+              </button>
+            </form>
           </>
         ) : timedOut ? (
           <>
@@ -78,9 +84,17 @@ export default function SubscriptionSuccessPage() {
             </h1>
             <p className="text-zinc-400 mb-6">
               A confirmação pode levar alguns minutos (boleto e Pix não são
-              instantâneos). Assim que for aprovada, o acesso é liberado
-              automaticamente.
+              instantâneos). Faça login novamente para verificar o status.
             </p>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Ir para o login
+              </button>
+            </form>
           </>
         ) : (
           <>
@@ -91,15 +105,6 @@ export default function SubscriptionSuccessPage() {
               Aguarde um instante enquanto validamos a sua assinatura.
             </p>
           </>
-        )}
-
-        {!confirmed && (
-          <button
-            onClick={goToDashboard}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gold text-black text-sm font-semibold hover:bg-gold/90 transition-colors"
-          >
-            Ir para o dashboard
-          </button>
         )}
       </div>
     </div>

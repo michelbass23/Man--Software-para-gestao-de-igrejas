@@ -128,7 +128,7 @@ export default function TeamPage() {
   const handleCopyCredentials = () => {
     if (!inviteResult) return;
 
-    const text = `Acesso ao sistema PrestaContas - ${inviteResult.churchName}\n\n` +
+    const text = `Acesso ao sistema Maná Sistemas - ${inviteResult.churchName}\n\n` +
       `Email: ${inviteResult.email}\n` +
       `Senha: ${inviteResult.password}\n\n` +
       `Acesse: http://localhost:3000/login\n\n` +
@@ -147,7 +147,7 @@ export default function TeamPage() {
       inviteResult.role;
 
     const text = `Olá ${inviteResult.name}! 👋\n\n` +
-      `Você foi convidado(a) para acessar o sistema *PrestaContas* da *${inviteResult.churchName}*.\n\n` +
+      `Você foi convidado(a) para acessar o sistema *Maná Sistemas* da *${inviteResult.churchName}*.\n\n` +
       `📋 *Seus dados de acesso:*\n` +
       `📧 Email: ${inviteResult.email}\n` +
       `🔑 Senha: ${inviteResult.password}\n` +

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { logAudit, diffFields } from "@/lib/audit";
 import { requireEditor } from "@/lib/authz";
+import { canAddMember } from "@/lib/plans";
 
 async function getTenantId(): Promise<string> {
   const supabase = await createClient();
@@ -114,6 +115,26 @@ export async function createMember(data: {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Verificar limite de membros do plano
+  const { data: tenant } = await supabase
+    .from("tenants")
+    .select("plan")
+    .eq("id", tenantId)
+    .single();
+
+  const { count } = await supabase
+    .from("members")
+    .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId);
+
+  const memberCheck = canAddMember(tenant?.plan, count || 0);
+  if (!memberCheck.allowed) {
+    return {
+      error: `Limite de ${memberCheck.limit} membros atingido no plano atual. Faça upgrade para o plano Completo para membros ilimitados.`,
+      limitReached: true,
+    };
+  }
 
   const { error } = await supabase.from("members").insert({
     tenant_id: tenantId,

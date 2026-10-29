@@ -55,7 +55,21 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const plan: AsaasPlan = body.plan === "annual" ? "annual" : "monthly";
+    let plan: AsaasPlan;
+    let planId: string;
+    if (body.plan === "starter_annual") {
+      plan = "starter_annual";
+      planId = "starter";
+    } else if (body.plan === "starter_monthly" || body.plan === "starter") {
+      plan = "starter_monthly";
+      planId = "starter";
+    } else if (body.plan === "annual") {
+      plan = "annual";
+      planId = "pro";
+    } else {
+      plan = "monthly";
+      planId = "pro";
+    }
     const cpfCnpj: string = (body.cpfCnpj || "").replace(/\D/g, "");
     const phone: string | undefined = body.phone;
 
@@ -88,6 +102,7 @@ export async function POST(request: NextRequest) {
         asaas_customer_id: customer.id,
         asaas_subscription_id: subscription.id,
         cpf_cnpj: cpfCnpj,
+        pending_plan: planId,
         updated_at: new Date().toISOString(),
       })
       .eq("id", profile.tenant_id);

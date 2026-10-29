@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Rotas públicas (não precisam de autenticação)
-  const publicPaths = ["/", "/login", "/api/auth", "/checkin", "/termos", "/privacidade"];
+  const publicPaths = ["/", "/login", "/api/auth", "/checkin", "/termos", "/privacidade", "/doar"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   // Rotas de API (não redirecionar, retornar JSON)

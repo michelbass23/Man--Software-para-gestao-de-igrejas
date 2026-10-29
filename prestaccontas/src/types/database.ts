@@ -26,7 +26,9 @@ export interface Tenant {
   name: string;
   slug: string;
   status: "active" | "inactive" | "trialing" | "overdue";
-  plan: "free" | "pro" | "enterprise";
+  plan: "free" | "starter" | "pro" | "enterprise";
+  /** Plano escolhido no checkout, antes do webhook confirmar o pagamento. */
+  pending_plan?: "starter" | "pro" | "enterprise" | null;
   logo_url?: string;
   asaas_customer_id?: string;
   asaas_subscription_id?: string;

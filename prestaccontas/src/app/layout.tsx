@@ -12,32 +12,84 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://manasistemas.com.br";
+
 export const metadata: Metadata = {
-  title: "PrestaContas — Gestão Financeira para Igrejas",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Maná Sistemas — Gestão Financeira para Igrejas",
+    template: "%s | Maná Sistemas",
+  },
   description:
-    "Sistema de prestação de contas simplificada para igrejas. Controle dízimos, ofertas e despesas com transparência e elegância.",
+    "Sistema completo de gestão financeira e administrativa para igrejas. Controle dízimos, ofertas, despesas, membros e eventos com check-in por QR Code. Comece grátis por 7 dias.",
   keywords: [
-    "igreja",
-    "prestação de contas",
-    "finanças",
-    "dízimo",
-    "oferta",
-    "gestão financeira",
+    "gestão financeira para igrejas",
+    "sistema para igrejas",
+    "prestação de contas igreja",
+    "controle de dízimos",
+    "controle de ofertas",
+    "software igreja",
+    "sistema administrativo igreja",
+    "check-in igreja",
+    "QR code igreja",
+    "gestão de membros igreja",
+    "relatório financeiro igreja",
+    "Maná Sistemas",
   ],
+  authors: [{ name: "MRS Tecnologia", url: "https://manasistemas.com.br" }],
+  creator: "MRS Tecnologia",
+  publisher: "MRS Tecnologia",
+  alternates: {
+    canonical: "/",
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "PrestaContas",
+    title: "Maná Sistemas",
   },
   formatDetection: {
     telephone: false,
   },
   openGraph: {
     type: "website",
-    siteName: "PrestaContas",
-    title: "PrestaContas — Gestão Financeira para Igrejas",
-    description: "Sistema de prestação de contas simplificada para igrejas",
+    locale: "pt_BR",
+    url: siteUrl,
+    siteName: "Maná Sistemas",
+    title: "Maná Sistemas — Gestão Financeira para Igrejas",
+    description:
+      "Controle dízimos, ofertas, despesas, membros e eventos com check-in por QR Code. Sistema completo para igrejas. Teste grátis por 7 dias.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Maná Sistemas — Gestão Financeira para Igrejas",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Maná Sistemas — Gestão Financeira para Igrejas",
+    description:
+      "Controle dízimos, ofertas, despesas, membros e eventos com check-in por QR Code. Teste grátis por 7 dias.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  verification: {
+    // Adicione o código do Google Search Console em:
+    // https://search.google.com/search-console → Verificação por tag HTML
+    // google: "seu-codigo-de-verificacao",
   },
 };
 

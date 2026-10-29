@@ -398,7 +398,7 @@ export default function ReportsPage() {
                 relatório completo com todas as transações detalhadas
               </p>
               <p className="text-faint text-[10px] md:text-xs mt-1">
-                PrestaContas - Sistema de Prestação de Contas para Igrejas
+                Maná Sistemas - Gestão Financeira para Igrejas
               </p>
             </div>
           </div>

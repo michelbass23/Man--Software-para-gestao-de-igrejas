@@ -16,13 +16,13 @@ export default function SetupPage() {
         <div className="flex items-center gap-3 mb-8">
           <Image
             src={logoImg}
-            alt="PrestaContas"
+            alt="Maná Sistemas"
             width={40}
             height={40}
             className="rounded-xl"
           />
           <span className="text-xl font-semibold text-zinc-100">
-            PrestaContas
+            Maná Sistemas
           </span>
         </div>
 

@@ -70,6 +70,11 @@ export default function DashboardShell({
 
         <OverdueBanner overdueSince={subscriptionOverdueSince} />
 
+        {/* Spacer para o banner de teste fixo no topo */}
+        {!isDemo && trialEndsAt && !trialExpired && (
+          <div className="h-11" />
+        )}
+
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden">
           {children}
         </main>

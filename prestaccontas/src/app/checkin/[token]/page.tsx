@@ -348,7 +348,7 @@ export default function CheckInPage({
 
         {/* Footer */}
         <p className="text-center text-zinc-600 text-[10px] mt-4">
-          PrestaContas - Sistema de Presença
+          Maná Sistemas - Sistema de Presença
         </p>
       </div>
     </div>

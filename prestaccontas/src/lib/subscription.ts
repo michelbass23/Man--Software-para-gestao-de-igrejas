@@ -1,8 +1,8 @@
 // Regras de acesso: período de teste grátis e assinatura paga.
 //
 // Para mudar a duração do teste, altere apenas esta constante.
-// Ex.: 7 dias -> 7 * 24 * 60 * 60 * 1000
-export const TRIAL_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 dias de teste grátis
+// Ex.: 14 dias -> 14 * 24 * 60 * 60 * 1000
+export const TRIAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias de teste grátis
 
 export type AccessState =
   | "active" // assinatura paga em dia
@@ -27,7 +27,7 @@ export interface TenantAccess {
 }
 
 function isPaidPlan(plan?: string | null) {
-  return plan === "pro" || plan === "enterprise";
+  return plan === "starter" || plan === "pro" || plan === "enterprise";
 }
 
 export function resolveTenantAccess(tenant: TenantAccessInput): TenantAccess {

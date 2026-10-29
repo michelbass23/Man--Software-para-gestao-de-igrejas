@@ -25,7 +25,7 @@ export default function MobileHeader({
   tenantName = "Igreja",
 }: MobileHeaderProps) {
   const pathname = usePathname();
-  const title = pageTitle[pathname] || "PrestaContas";
+  const title = pageTitle[pathname] || "Maná Sistemas";
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-surface/95 backdrop-blur-xl border-b border-border lg:hidden">

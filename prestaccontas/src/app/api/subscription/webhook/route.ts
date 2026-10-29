@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     const { data: tenant } = await admin
       .from("tenants")
-      .select("id, status, subscription_started_at")
+      .select("id, status, subscription_started_at, pending_plan")
       .eq("asaas_subscription_id", subscriptionId)
       .single();
 
@@ -87,7 +87,8 @@ export async function POST(request: NextRequest) {
 
       const updateData: Record<string, unknown> = {
         status: "active",
-        plan: "pro",
+        plan: tenant.pending_plan || "pro",
+        pending_plan: null,
         subscription_next_payment: subscription.nextDueDate,
         subscription_overdue_since: null,
         updated_at: new Date().toISOString(),

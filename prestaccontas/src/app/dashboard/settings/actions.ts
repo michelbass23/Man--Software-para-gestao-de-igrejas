@@ -65,7 +65,7 @@ export async function exportAllTenantData() {
 
   return {
     exportadoEm: new Date().toISOString(),
-    formato: "PrestaContas — exportação LGPD (portabilidade de dados)",
+    formato: "Maná Sistemas — exportação LGPD (portabilidade de dados)",
     igreja: tenant.data ?? null,
     usuarios: profiles.data ?? [],
     membros: members.data ?? [],
@@ -170,6 +170,90 @@ export async function removeLogo() {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/settings");
+  return { error: null };
+}
+
+// ============================================
+// PIX Configuration
+// ============================================
+
+export async function getPixConfig() {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  const { data: tenant, error } = await supabase
+    .from("tenants")
+    .select("pix_key, pix_key_type, name, slug")
+    .eq("id", tenantId)
+    .single();
+
+  if (error) {
+    console.error("Erro ao buscar config PIX:", error);
+    return null;
+  }
+
+  return tenant;
+}
+
+export async function savePixConfig(key: string, keyType: string) {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  // Basic validation
+  const cleaned = key.trim();
+  if (!cleaned) {
+    return { error: "Chave PIX é obrigatória" };
+  }
+
+  const validTypes = ["cpf", "cnpj", "email", "phone", "random"];
+  if (!validTypes.includes(keyType)) {
+    return { error: "Tipo de chave inválido" };
+  }
+
+  // Type-specific validation
+  const digits = cleaned.replace(/\D/g, "");
+  if (keyType === "cpf" && digits.length !== 11) {
+    return { error: "CPF deve ter 11 dígitos" };
+  }
+  if (keyType === "cnpj" && digits.length !== 14) {
+    return { error: "CNPJ deve ter 14 dígitos" };
+  }
+  if (keyType === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned)) {
+    return { error: "E-mail inválido" };
+  }
+  if (keyType === "phone" && digits.length < 10) {
+    return { error: "Telefone inválido" };
+  }
+
+  const { error } = await supabase
+    .from("tenants")
+    .update({ pix_key: cleaned, pix_key_type: keyType })
+    .eq("id", tenantId);
+
+  if (error) {
+    console.error("Erro ao salvar PIX:", error);
+    return { error: "Erro ao salvar configuração PIX" };
+  }
+
+  revalidatePath("/dashboard/settings");
+  return { error: null };
+}
+
+export async function removePixConfig() {
+  const supabase = await createClient();
+  const tenantId = await getTenantId();
+
+  const { error } = await supabase
+    .from("tenants")
+    .update({ pix_key: null, pix_key_type: null })
+    .eq("id", tenantId);
+
+  if (error) {
+    console.error("Erro ao remover PIX:", error);
+    return { error: "Erro ao remover configuração PIX" };
+  }
+
   revalidatePath("/dashboard/settings");
   return { error: null };
 }

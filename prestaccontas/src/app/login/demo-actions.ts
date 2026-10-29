@@ -20,12 +20,43 @@ function daysAgo(days: number): string {
   return daysFromNow(-days);
 }
 
+function isNetworkError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+  return (
+    msg.includes("fetch") ||
+    msg.includes("network") ||
+    msg.includes("econnrefused") ||
+    msg.includes("enotfound") ||
+    msg.includes("getaddrinfo") ||
+    msg.includes("certificate")
+  );
+}
+
 // Seed completo do demo
 export async function seedDemo() {
   const admin = createAdminClient();
 
   // 1. Verificar se demo já existe e limpar
-  const { data: existingUser } = await admin.auth.admin.listUsers();
+  let existingUser: { users?: { id: string; email?: string }[] } | null = null;
+  try {
+    const { data, error: listError } = await admin.auth.admin.listUsers();
+    if (listError) {
+      console.error("Erro ao listar usuários demo:", listError);
+      return {
+        error:
+          "Não foi possível conectar ao servidor de autenticação (Supabase). O projeto pode estar pausado ou o acesso à internet caiu.",
+      };
+    }
+    existingUser = data;
+  } catch (err) {
+    console.error("Falha de rede ao listar usuários demo:", err);
+    return {
+      error: isNetworkError(err)
+        ? "Sem conexão com o Supabase. Verifique se o projeto está ativo (não pausado) e sua internet."
+        : "Erro inesperado ao preparar a demonstração.",
+    };
+  }
+
   const demoUser = existingUser?.users?.find((u) => u.email === DEMO_EMAIL);
 
   if (demoUser) {
@@ -46,38 +77,68 @@ export async function seedDemo() {
   }
 
   // 2. Criar usuário demo
-  const { data: authData, error: authError } =
-    await admin.auth.admin.createUser({
+  let authData: { user: { id: string } } | null = null;
+  try {
+    const { data, error: authError } = await admin.auth.admin.createUser({
       email: DEMO_EMAIL,
       password: DEMO_PASSWORD,
       email_confirm: true,
     });
-
-  if (authError || !authData.user) {
-    console.error("Erro ao criar usuário demo:", authError);
-    return { error: "Erro ao criar conta demo" };
+    if (authError || !data?.user) {
+      console.error("Erro ao criar usuário demo:", authError);
+      return {
+        error:
+          authError && isNetworkError(authError)
+            ? "Sem conexão com o Supabase ao criar a conta demo."
+            : "Erro ao criar conta demo",
+      };
+    }
+    authData = data as { user: { id: string } };
+  } catch (err) {
+    console.error("Falha de rede ao criar usuário demo:", err);
+    return {
+      error: isNetworkError(err)
+        ? "Sem conexão com o Supabase. O projeto pode estar pausado."
+        : "Erro inesperado ao criar conta demo.",
+    };
   }
 
-  const userId = authData.user.id;
+  const userId = authData!.user.id;
 
   // 3. Criar tenant (igreja)
-  const { data: tenant, error: tenantError } = await admin
-    .from("tenants")
-    .insert({
-      name: DEMO_CHURCH,
-      slug: `demo-${Date.now().toString(36)}`,
-      plan: "pro",
-      status: "active",
-    })
-    .select()
-    .single();
+  let tenant: { id: string } | null = null;
+  try {
+    const { data, error: tenantError } = await admin
+      .from("tenants")
+      .insert({
+        name: DEMO_CHURCH,
+        slug: `demo-${Date.now().toString(36)}`,
+        plan: "pro",
+        status: "active",
+      })
+      .select()
+      .single();
 
-  if (tenantError || !tenant) {
-    console.error("Erro ao criar tenant demo:", tenantError);
-    return { error: "Erro ao criar igreja demo" };
+    if (tenantError || !data) {
+      console.error("Erro ao criar tenant demo:", tenantError);
+      return {
+        error:
+          tenantError && isNetworkError(tenantError)
+            ? "Sem conexão com o Supabase ao criar a igreja demo."
+            : "Erro ao criar igreja demo",
+      };
+    }
+    tenant = data;
+  } catch (err) {
+    console.error("Falha de rede ao criar tenant demo:", err);
+    return {
+      error: isNetworkError(err)
+        ? "Sem conexão com o Supabase. O projeto pode estar pausado."
+        : "Erro inesperado ao criar igreja demo.",
+    };
   }
 
-  const tenantId = tenant.id;
+  const tenantId = tenant!.id;
 
   // 4. Criar profile
   await admin.from("profiles").insert({
@@ -288,7 +349,7 @@ export async function seedDemo() {
         is_fixed: true,
         due_day: expense.due_day,
         is_recurring: true,
-        status: "pago",
+        status: "paid",
       });
     }
 
@@ -312,7 +373,7 @@ export async function seedDemo() {
           amount: expense.amount + Math.floor(Math.random() * 200) - 100,
           description: expense.description,
           is_fixed: false,
-          status: "pago",
+          status: "paid",
         });
       }
     }
@@ -326,7 +387,17 @@ export async function seedDemo() {
 // Login do demo
 export async function loginDemo() {
   // Sempre recriar o demo com dados frescos
-  const result = await seedDemo();
+  let result: { error: string | null; success?: boolean };
+  try {
+    result = await seedDemo();
+  } catch (err) {
+    console.error("Falha inesperada no seedDemo:", err);
+    return {
+      error: isNetworkError(err)
+        ? "Sem conexão com o Supabase. O projeto pode estar pausado ou deletado — verifique o painel do Supabase."
+        : "Erro inesperado ao preparar a demonstração.",
+    };
+  }
   if (result.error) {
     return result;
   }
@@ -340,7 +411,11 @@ export async function loginDemo() {
 
   if (error) {
     console.error("Erro ao fazer login demo:", error);
-    return { error: "Erro ao acessar demo" };
+    return {
+      error: isNetworkError(error)
+        ? "Sem conexão com o Supabase ao entrar na demo."
+        : "Erro ao acessar demo",
+    };
   }
 
   revalidatePath("/", "layout");

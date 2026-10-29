@@ -3,18 +3,32 @@ const ASAAS_API_URL =
     ? "https://api.asaas.com/v3"
     : "https://api-sandbox.asaas.com/v3";
 
-type AsaasPlan = "monthly" | "annual";
+type AsaasPlan = "starter_monthly" | "starter_annual" | "monthly" | "annual";
 
-const PLAN_CONFIG: Record<AsaasPlan, { cycle: "MONTHLY" | "YEARLY"; value: number; description: string }> = {
+const PLAN_CONFIG: Record<AsaasPlan, { cycle: "MONTHLY" | "YEARLY"; value: number; description: string; planId: string }> = {
+  starter_monthly: {
+    cycle: "MONTHLY",
+    value: 59.0,
+    description: "Maná Sistemas - Plano Essencial Mensal",
+    planId: "starter",
+  },
+  starter_annual: {
+    cycle: "YEARLY",
+    value: 590.0,
+    description: "Maná Sistemas - Plano Essencial Anual",
+    planId: "starter",
+  },
   monthly: {
     cycle: "MONTHLY",
     value: 147.0,
-    description: "Maná Sistemas - Plano Mensal",
+    description: "Maná Sistemas - Plano Completo Mensal",
+    planId: "pro",
   },
   annual: {
     cycle: "YEARLY",
     value: 1470.0,
-    description: "Maná Sistemas - Plano Anual",
+    description: "Maná Sistemas - Plano Completo Anual",
+    planId: "pro",
   },
 };
 

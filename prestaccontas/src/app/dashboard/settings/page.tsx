@@ -7,6 +7,7 @@ import Image from "next/image";
 import { getTenantSettings, uploadLogo, removeLogo, exportAllTenantData } from "./actions";
 import { sendTestPush } from "./push-actions";
 import ThemeToggle from "@/components/ThemeToggle";
+import PixSettings from "@/components/PixSettings";
 import { downloadJSON, fileDateSuffix } from "@/lib/csv";
 import { showError, showSuccess } from "@/lib/alerts";
 import {
@@ -253,6 +254,9 @@ export default function SettingsPage() {
         </p>
         <ThemeToggle variant="segmented" className="flex-wrap" />
       </div>
+
+      {/* PIX */}
+      <PixSettings />
 
       {/* Notificações */}
       <div className="glass-card p-4 md:p-6 mb-6 opacity-0 animate-fade-in stagger-2">
