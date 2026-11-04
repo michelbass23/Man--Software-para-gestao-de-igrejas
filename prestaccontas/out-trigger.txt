@@ -1,0 +1,9 @@
+tenant starter criado: d8d26637-9c02-4d9a-b1d5-41bdfc86da09
+inseriu 150 -> status 201 ok
+151º membro -> 400 :: {"code":"23514","details":null,"hint":null,"message":"Limite de 150 membros atingido no plano atual. Faça upgrade para o plano Completo para membros ilimitados."}
+  => BLOQUEADO (correto)
+contagem final: 0-149/150
+plano PRO 151 inseridos -> status 201 | contagem 0-150/151 => ILIMITADO (correto)
+tenant pro de teste removido
+tenant starter de teste removido (cascade apaga membros)
+residuos: []
